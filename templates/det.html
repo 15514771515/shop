@@ -1,0 +1,457 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar{
+            width:36px;height:36px;border-radius:50%;object-fit:cover;
+        }
+        .detail-img{
+            width:100%;
+            max-height:420px;
+            object-fit:contain;
+        }
+    </style>
+</head>
+<body>
+<!--导航栏-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">简易商城</a>
+
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/">首页</a></li>
+                <li class="nav-item"><a class="nav-link" id="666" href="/cart/">购物车</a></li>
+                <li class="nav-item"><a class="nav-link" id="777" href="/order/">我的订单</a></li>
+            </ul>
+            <ul class="navbar-nav">
+                <img id="avatar" src="../media/avatar/img.png" class="avatar">
+                <li class="nav-item"><a id="den" class="nav-link" href="/login_pwd/">登录</a></li>
+            </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row g-4">
+        <!--商品图片区-->
+        <div class="col-md-6">
+            <div class="border rounded p-3">
+                <img id="img" src="/media/good_img/img_6.png" alt="机械游戏鼠标" class="detail-img">
+            </div>
+        </div>
+        <!--商品信息区-->
+        <div class="col-md-6">
+            <h2 id="mingzi" class="fs-3">机械游戏鼠标</h2>
+            <div onclick="dianpu()" class="mb-2">
+                <span id="dianpu" class="badge bg-primary">官方旗舰店</span>
+            </div>
+            <div id="jiage" class="text-danger fs-3 fw-bold my-3">¥249</div>
+            <div class="mb-2"><span class="text-secondary">分类：</span><span id="leibie">键盘外设</span></div>
+            <div class="mb-2"><span class="text-secondary">库存：</span><span id="kucun">94</span>件</div>
+
+            <hr>
+            <h5>商品简介</h5>
+            <p id="jianjie">高DPI游戏鼠标，人体工学外壳，多档灯光调节，适合电竞游戏使用，握持舒适，按键响应迅速。</p>
+
+            <div class="mt-4 d-flex gap-3 flex-wrap">
+                <button id="add" class="btn btn-warning">加入购物车</button>
+                <button id="buy" onclick="hh()" class="btn btn-primary">立即购买</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h4>商品详情</h4>
+        <div class="border rounded p-4 bg-light">
+            <p>型号：<span id="xinghao"></span></p>
+            <p>接口：<span id="jiekou"></span></p>
+            <p>DPI：<span id="dpi"></span></p>
+            <p>灯光：<span id="dengguang"></span></p>
+            <p>适用：<span id="shiyong"></span></p>
+        </div>
+    </div>
+    <!-- 评论区 -->
+    <div class="mt-5">
+        <h4>商品评论</h4>
+        <!-- 发表评论表单 -->
+        <div class="border rounded p-4 mt-3">
+            <h5>写下你的评价</h5>
+            <textarea id="te" class="form-control mt-2" rows="3" placeholder="输入评论内容..."></textarea>
+            <span style="color:red" id="msg"></span>
+            <div class="mt-2">
+            <input id="file" type="file" class="form-control" accept="image/*" multiple style="display:none;">
+            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('file').click()">
+                上传图片（最多6张）
+            </button>
+                <span id="che"></span>
+            <div id="img_div" class="mt-2 d-flex gap-2 flex-wrap">
+            </div>
+        </div>
+            <button onclick="send()" class="btn btn-primary mt-3">发送</button>
+        </div>
+        <span style="color:green" id="mmmm"></span>
+        <!-- 评论列表 -->
+        <div id="comments" class="mt-4">
+<!--            <div class="border rounded p-3 mb-3">-->
+<!--                <div class="d-flex justify-content-between">-->
+<!--                    <div class="d-flex align-items-center gap-2">-->
+<!--                        <img src="#" class="rounded-circle" width="36" height="36" alt="头像">-->
+<!--                        <span class="fw-bold">用户001</span>-->
+<!--                    </div>-->
+<!--                    <span class="text-secondary small">2026-09-10</span>-->
+<!--                </div>-->
+<!--                <p class="mt-2 mb-0">耳机音质很好，降噪效果不错，佩戴很舒服！</p>-->
+<!--                <div class="mt-3 d-flex gap-2 flex-wrap">-->
+<!--                    <img src="#" class="rounded" style="width:100px;height:100px;object-fit:cover;" alt="评论图片">-->
+<!--                    <img src="#" class="rounded" style="width:100px;height:100px;object-fit:cover;" alt="评论图片">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="border rounded p-3 mb-3">-->
+<!--                <div class="d-flex justify-content-between">-->
+<!--                    <div class="d-flex align-items-center gap-2">-->
+<!--                        <img src="../media/avatar/img.png" class="rounded-circle" width="36" height="36" alt="头像">-->
+<!--                        <span class="fw-bold">用户001</span>-->
+<!--                    </div>-->
+<!--                    <span class="text-secondary small">2026-09-08</span>-->
+<!--                </div>-->
+<!--                <p class="mt-2 mb-0">续航很强，Type-C充电很方便，性价比高。</p>-->
+<!--            </div>-->
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    const pathArr = location.pathname.split('/')
+    const pk = Number(pathArr.pop())
+    console.log(pk)
+    if(localStorage.getItem("refresh_token")){
+        let den=document.getElementById("den")
+        let ava=document.getElementById("avatar")
+        api.get("/get_file/").then(
+            function(res){
+                den.innerText="个人主页"
+                den.href="/user/"
+                ava.src=baseURL+res.data.avatar_url
+            }
+        )
+    }
+    function openPreview(imgSrc) {
+      const mask = document.createElement('div');
+      mask.style = `
+        position:fixed;
+        top:0;left:0;
+        width:100vw;height:100vh;
+        background:rgba(0,0,0,0.85);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        z-index:9999;
+        cursor:pointer;
+      `;
+      const bigImg = document.createElement('img');
+      bigImg.src = imgSrc;
+      bigImg.style = "max-width:90%;max-height:90vh;";
+
+      mask.appendChild(bigImg);
+      document.body.appendChild(mask);
+      mask.onclick = () => mask.remove();
+    }
+    function del(btn){
+        if(!confirm('你确定要删除这条评论吗?')){
+            return
+        }
+        let co_id=btn.id.slice(2)
+        api.delete("/comments/",{params:{id:co_id}})
+        let ddd=document.getElementById("di"+co_id)
+        ddd.remove()
+    }
+    function getRandName(){
+        const t = Date.now() + Math.random().toString(36).slice(2,10)
+        return t + ".jpg"
+    }
+    async function compressImg(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(file)
+            reader.onload = e => {
+                const imgObj = new Image()
+                imgObj.src = e.target.result
+                imgObj.onload = () => {
+                    const max = 1200
+                    let w = imgObj.width, h = imgObj.height
+                    if(w>max||h>max){
+                        if(w>h){ h = h*max/w; w=max }
+                        else{ w = w*max/h; h=max }
+                    }
+                    const canvas = document.createElement('canvas')
+                    canvas.width = w
+                    canvas.height = h
+                    canvas.getContext('2d').drawImage(imgObj,0,0,w,h)
+                    canvas.toBlob(b=>resolve(b), 'image/jpeg', 0.7)
+                }
+            }
+        })
+    }
+    let comment=document.getElementById("comments")
+    api.get("/comments/",{params:{id:pk,uid:localStorage.getItem("uid")}}).then(
+        function(res){
+            let da=res.data
+            console.log(da)
+            da.reverse()
+            for(i=0;i<da.length;i++){
+                let d=da[i]
+                comment.innerHTML+=`
+                    <div id="di${d.id}" class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <img onclick="openPreview('${baseURL}${d.avatar_url}')" src="${baseURL}${d.avatar_url}" class="rounded-circle" width="36" height="36" alt="头像">
+                                <span class="text-secondary">${d.name}</span>
+                                <span class="badge bg-success">${d.me}</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="text-secondary small">${d.time}</span>
+                                <span id='b${i}'></span>
+                            </div>
+                        </div>
+                        <p class="mt-2 mb-0">${d.text}</p>
+                        <div id="img${i}" class="mt-3 d-flex gap-2 flex-wrap">
+                        </div>
+                    </div>
+                `
+            }
+            for(k=0;k<da.length;k++){
+                let dat=da[k]
+                let img_div=document.getElementById("img"+k)
+                let b=document.getElementById("b"+k)
+                if(dat.me=='我'){
+                    b.innerHTML=`<button id="bu${dat.id}" onclick="del(this)" class="btn btn-sm btn-outline-danger">删除</button>`
+                }
+                for(l=1;l<=6;l++){
+                    let img_url=dat['img'+l]
+                    if(img_url!="#" && img_url!=''){
+                        console.log(img_url)
+                        img_div.innerHTML+=`
+                            <img onclick="openPreview('${baseURL}${img_url}')" src="${baseURL}${img_url}" class="rounded" style="width:100px;height:100px;" alt="评论图片">
+                        `
+                    }
+                }
+            }
+        }
+    )
+
+    let f=document.getElementById("file")
+    let n=0
+    api.get("/clear/")
+    f.onchange=async function(e){
+        if(n>=6){
+            alert("图片已达上限")
+            return
+        }
+        let fd=new FormData()
+        const img=await compressImg(e.target.files[0])
+        console.log(img)
+        fd.append("img",img,getRandName())
+        api.post("/upload/",fd).then(
+            function(res){
+                let di=document.getElementById("img_div")
+                n++
+                di.innerHTML+=`<img onclick="openPreview('${baseURL}${res.data.url}')" id="imgg${n}" src="${baseURL}${res.data.url}" width="100" height="100">`
+                if(n>0){
+                    let che=document.getElementById("che")
+                    che.innerHTML=`<button id="ch" onclick="che()" class="btn btn-warning">撤销</button>`
+                }
+            }
+        )
+    }
+    function che(){
+        let di=document.getElementById("img"+n)
+        di.remove()
+        n--
+        if(n<=0){
+            let che=document.getElementById("ch")
+            che.remove()
+        }
+    }
+    function send(){
+        let te=document.getElementById("te")
+        if(te.value==''){
+            te.style.border="2px solid red"
+            let msg=document.getElementById("msg")
+            msg.innerText="评论不能为空"
+            setTimeout(()=>{
+                msg.innerText=''
+                te.style.border="1px solid #DEE2E6"
+            },7000)
+            return
+        }
+        let t=te.value
+        let da={}
+        da['text']=t
+        da['id']=pk
+        let li=[]
+        for(h=1;h<=6;h++){
+            let im=document.getElementById("imgg"+h)
+            console.log(im)
+            if(im!=null){
+                let io="/media"+"/ar"+im.src.slice(baseURL.length+14)
+                li.push(im.src.slice(baseURL.length))
+                da['img'+h]=io
+            }else{
+                da['img'+h]='#'
+            }
+        }
+        console.log(li)
+        api.post("/move/",{list:li})
+        console.log(da)
+        api.post("/realese/",da).then(
+            function(res){
+                n=0
+                let com=document.getElementById("comments")
+                let d=res.data
+                const htmlStr = `
+                    <div id="di${d.id}" class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <img onclick="openPreview('${baseURL}${d.avatar_url}')" src="${baseURL}${d.avatar_url}" class="rounded-circle" width="36" height="36" alt="头像">
+                                <span class="text-secondary">${d.name}</span>
+                                <span class="badge bg-success">我</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="text-secondary small">${d.time}</span>
+                                <span><button id="bu${d.id}" onclick="del(this)" class="btn btn-sm btn-outline-danger">删除</button></span>
+                            </div>
+                        </div>
+                        <p class="mt-2 mb-0">${d.text}</p>
+                        <div id="iimm" class="mt-3 d-flex gap-2 flex-wrap">
+                        </div>
+                    </div>
+                `
+                const div = document.createRange().createContextualFragment(htmlStr)
+                let comme=document.getElementById("comments")
+                comme.prepend(div)
+                let iimm=document.getElementById("iimm")
+                for(ii=1;ii<=6;ii++){
+                    console.log(da)
+                    let img_u=da['img'+ii]
+                    if(img_u!='' && img_u!="#" && img_u!=undefined){
+                        iimm.innerHTML+=`<img onclick="openPreview('${baseURL}/${img_u}')" src="${baseURL}/${img_u}" width="100" height="100">`
+                    }
+                }
+            }
+        )
+        let img_div=document.getElementById("img_div")
+        img_div.innerHTML=''
+        let che=document.getElementById("che")
+        che.innerHTML=''
+        te.value=""
+        let mmmm=document.getElementById("mmmm")
+        mmmm.innerText="发送成功"
+        setTimeout(()=>{
+            mmmm.innerText=''
+        },7000)
+        i=0
+    }
+    api.get("/get_det/"+pk).then(
+        function(res){
+            let d=res.data
+            let img=document.getElementById("img")
+            let mingzi=document.getElementById("mingzi")
+            let jiage=document.getElementById("jiage")
+            let leibie=document.getElementById("leibie")
+            let kucun=document.getElementById("kucun")
+            let jianjie=document.getElementById("jianjie")
+            let xinghao=document.getElementById("xinghao")
+            let jiekou=document.getElementById("jiekou")
+            let dpi=document.getElementById("dpi")
+            let dengguang=document.getElementById("dengguang")
+            let shiyong=document.getElementById("shiyong")
+            let dianpu=document.getElementById("dianpu")
+            dianpu.innerText=d.dianpu
+            img.src=baseURL+d.img_url
+            mingzi.innerText=d.name
+            localStorage.setItem("name",d.name)
+            jiage.innerText="¥"+d.price
+            leibie.innerText=d.categlory
+            kucun.innerText=d.storage
+            jianjie.innerText=d.introduce
+            xinghao.innerText=d.xinghao
+            jiekou.innerText=d.jiekou
+            dpi.innerText=d.dpi
+            dengguang.innerText=d.light
+            shiyong.innerText=d.use
+        }
+    )
+
+    let kkk=document.getElementById("666")
+    let kk=document.getElementById("777")
+    let aa=document.getElementById("add")
+    let bb=document.getElementById("buy")
+    if(!localStorage.getItem("refresh_token")){
+            kkk.href="#"
+            kk.href="#"
+            kkk.onclick=function(){
+                let rr=confirm("你还未登录,请先登录")
+                if(!rr){return}
+                location.href="/login_pwd/"
+            }
+            kk.onclick=function(){
+                let rr=confirm("你还未登录,请先登录")
+                if(!rr){return}
+                location.href="/login_pwd/"
+            }
+            aa.onclick=function(){
+                let rr=confirm("你还未登录,请先登录")
+                if(!rr){return}
+                location.href="/login_pwd/"
+            }
+            bb.onclick=function(){
+                let rr=confirm("你还未登录,请先登录")
+                if(!rr){return}
+                location.href="/login_pwd/"
+            }
+        }
+    function add(btn){
+        btn.disabled=true
+        let id=pk
+        console.log(id)
+        btn.disabled=true
+        api.post("/shop_cart/",{id:id}).then(
+            function(res){
+                console.log(res.data)
+                btn.disabled=false
+                alert(`${res.data.num}个  [ ${localStorage.getItem("name")} ]  已经加入你的购物车!`)
+            }
+        )
+        setTimeout(()=>{btn.disabled=false},100)
+    }
+    if(localStorage.getItem("refresh_token")){
+        aa.onclick=function(){add(aa)}
+    }
+    function hh(){
+        api.post("/tijiao/",{id_list:[pk],count_list:["1"]}).then(
+            function(res){
+                location.href="/zhifu/"+res.data.order_code
+            }
+        ).catch(
+            function(err){
+                if(err.response.status==400){
+                    alert(`[ ${err.response.data.name} ] 库存不足`)
+                }
+            }
+        )
+    }
+    function dianpu(){
+        let dianpu_name=document.getElementById("dianpu").innerText
+        location.href="/dianpu/"+dianpu_name
+    }
+
+</script>
+</body>
+</html>

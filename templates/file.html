@@ -1,0 +1,265 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>完善个人资料</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar-preview{
+            width:120px;
+            height:120px;
+            border-radius:50%;
+            object-fit:cover;
+            border:2px solid #dee2e6;
+        }
+        .msg{
+            color:red
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4 mt-md-5">
+    <div class="row justify-content-center">
+        <!--手机占满屏幕，中等屏幕开始变窄-->
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">登录成功,请你完善个人信息</h5>
+                </div>
+                <div class="card-body">
+                    <!--头像区域-->
+                    <div class="text-center mb-4">
+                        <img id="img" class="avatar-preview mb-2" src="/media/avatar/img.png" alt="头像">
+                        <div>
+                            <input id="ava" type="file" accept="image/*" class="form-control mt-2">
+                            <div class="form-text">选择图片作为头像</div>
+                            <span class="msg" id="msg1"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">昵称</label>
+                        <input maxlength="12" id="name" class="form-control" type="text" placeholder="请输入昵称">
+                        <span class="msg" id="msg2"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">电话</label>
+                        <input id="phone" class="form-control" type="text" placeholder="请输入手机号(非必填)"
+                               maxlength="11">
+                        <span id="msg4" class="msg"></span>
+                    </div>
+                    <div class="row mb-0 g-2">
+                        <div class="col">
+                            <label class="form-label">省份</label>
+                            <select id="province" class="form-select">
+                                <option value="">请选择省份</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">城市</label>
+                            <select id="city" class="form-select">
+                                <option value="">请先选省份</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">区县</label>
+                            <select id="district" class="form-select">
+                                <option value="">请先选城市</option>
+                            </select>
+                        </div>
+                    </div>
+                    <span class="msg" id="msg3"></span>
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">详细地址</label>
+                        <input id="address" type="text" class="form-control" placeholder="街道、小区、门牌号">
+                    </div>
+                    <div class="d-grid">
+                        <button onclick="subm()" class="btn btn-primary mt-3">保存资料</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    if(!localStorage.getItem("refresh_token")){
+        location.href="/"
+    }
+    function isdigit(str){
+        return /^\d+$/.test(str);
+    }
+    const areaData = {
+    "河南省": [
+        {"name":"焦作市","dist":["山阳区","解放区","中站区","马村区","修武县","博爱县"]},
+        {"name":"郑州市","dist":["金水区","二七区","中原区","惠济区"]},
+        {"name":"洛阳市","dist":["西工区","洛龙区","老城区"]}
+    ],
+    "北京市": [{"name":"北京市","dist":["东城区","西城区","朝阳区","海淀区"]}],
+    "上海市": [{"name":"上海市","dist":["黄浦区","徐汇区","浦东新区"]}],
+    "广东省": [{"name":"广州市","dist":["天河区","越秀区"]},{"name":"深圳市","dist":["南山区","福田区"]}]
+};
+
+const proSel = document.querySelector("#province");
+const citySel = document.querySelector("#city");
+const disSel = document.querySelector("#district");
+
+Object.keys(areaData).forEach(p=>{
+    proSel.innerHTML += `<option value="${p}">${p}</option>`
+})
+
+proSel.onchange = function(){
+    citySel.innerHTML = "<option value=''>请选择城市</option>";
+    disSel.innerHTML = "<option value=''>请先选城市</option>";
+    const pVal = this.value;
+    if(!pVal) return;
+    areaData[pVal].forEach(city=>{
+        citySel.innerHTML += `<option value="${city.name}">${city.name}</option>`
+    })
+}
+
+citySel.onchange = function(){
+    disSel.innerHTML = "<option value=''>请选择区县</option>";
+    const pVal = proSel.value;
+    const cVal = this.value;
+    if(!cVal) return;
+    const cityItem = areaData[pVal].find(i=>i.name===cVal);
+    cityItem.dist.forEach(d=>{
+        disSel.innerHTML += `<option value="${d}">${d}</option>`
+    })
+}
+    function getRandName(){
+        const t = Date.now() + Math.random().toString(36).slice(2,10)
+        return t + ".jpg"
+    }
+    async function compressImg(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = e => {
+            const imgObj = new Image()
+            imgObj.src = e.target.result
+            imgObj.onload = () => {
+                const max = 1200
+                let w = imgObj.width, h = imgObj.height
+                if(w>max||h>max){
+                    if(w>h){ h = h*max/w; w=max }
+                    else{ w = w*max/h; h=max }
+                }
+                const canvas = document.createElement('canvas')
+                canvas.width = w
+                canvas.height = h
+                canvas.getContext('2d').drawImage(imgObj,0,0,w,h)
+                canvas.toBlob(b=>resolve(b), 'image/jpeg', 0.7)
+            }
+        }
+    })
+    }
+
+
+    let imginput=document.getElementById("ava")
+    imginput.onchange=async function(e){
+        let fd=new FormData()
+        const file=await compressImg(e.target.files[0])
+        console.log(file)
+        fd.append("avatar",file,getRandName())
+        api.post("/avatar/",fd).then(
+            function(res){
+                let img=document.getElementById("img")
+                localStorage.setItem("src","/media/avatar/"+res.data.ava_name)
+                console.log(res.data.avatar_url)
+                img.src=baseURL+"/"+res.data.avatar_url
+            }
+        )
+    }
+    function subm(){
+        let name=document.getElementById("name")
+        let phone=document.getElementById("phone")
+        let address=document.getElementById("address").value
+        let province=document.getElementById("province")
+        let city=document.getElementById("city")
+        let district=document.getElementById("district")
+
+        let ye=true
+        if(imginput.value==''){
+            imginput.style.border="2px solid red"
+            msg1=document.getElementById("msg1")
+            msg1.innerText="请选择头像"
+            ye=false
+            setTimeout(()=>{
+                msg1.innerText=""
+                imginput.style.border="1px solid #DEE2E6"
+            },6000)
+        }
+        if(name.value==""){
+            name.style.border="2px solid red"
+            let msg2=document.getElementById("msg2")
+            msg2.innerText="请输入昵称"
+            ye=false
+            setTimeout(()=>{
+                msg2.innerText=""
+                name.style.border="1px solid #DEE2E6"
+            },6000)
+        }
+        if(name.value.length>12){
+            name.style.border="2px solid red"
+            let msg2=document.getElementById("msg2")
+            msg2.innerText="昵称过长(不能超过12位)"
+            ye=false
+            setTimeout(()=>{
+                msg2.innerText=""
+                name.style.border="1px solid #DEE2E6"
+            },6000)
+        }
+        if((phone.value.length!=11 || !isdigit(phone.value)) && phone.value!=""){
+            phone.style.border="2px solid red"
+            let msg2=document.getElementById("msg4")
+            msg2.innerText="手机号只能是11位纯数字"
+            ye=false
+            setTimeout(()=>{
+                msg2.innerText=""
+                phone.style.border="1px solid #DEE2E6"
+            },6000)
+        }
+        if(province.value=="" || city.value=="" || district.value==""){
+            if(province.value==""){province.style.border="2px solid red"}
+            if(city.value==""){city.style.border="2px solid red"}
+            if(district.value==""){district.style.border="2px solid red"}
+            let msg3=document.getElementById("msg3")
+            ye=false
+            msg3.innerText="请完善地址"
+            setTimeout(()=>{
+                msg3.innerText=""
+                province.style.border="1px solid #DEE2E6"
+                city.style.border="1px solid #DEE2E6"
+                district.style.border="1px solid #DEE2E6"
+            },6000)
+        }
+        if(ye==true){
+            let img=document.getElementById("img")
+            let url=img.src
+            console.log(url)
+            let ur=url.slice(baseURL.length)
+            let nc=name.value
+            let ph=phone.value
+            let addr=province.value+city.value+district.value+address
+            api.post("/file_post/",{avatar_url:ur,name:nc,phone:ph,address:addr}).then(
+                function(res){
+                    localStorage.removeItem("src")
+                    alert("保存成功")
+                    location.href="/"
+                }
+            ).catch(
+                function(err){
+                    return
+                }
+            )
+        }
+    }
+</script>
+</body>
+</html>

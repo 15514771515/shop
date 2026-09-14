@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱验证码登录 - 简易商城</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card p-5">
+                <h3 class="text-center mb-4">简易商城 - 邮箱验证码登录</h3>
+                    <div class="mb-3">
+                        <label class="form-label">邮箱</label>
+                        <input  id="email" type="email" class="form-control" placeholder="请输入注册邮箱">
+                        <div id="msg1" style="color:red"></div>
+                    </div>
+                    <div class="mb-0 d-flex gap-2">
+                        <input id="ver" type="text" class="form-control flex-grow-1" placeholder="请输入验证码">
+                        <button id="btn" onclick="send()" class="btn btn-outline-secondary">获取验证码</button>
+                    </div>
+                    <span class="mb-5" style="color:red;margin-bottom:20px" id="msg2"></span>
+                    <div id="msg" style="color:red"></div>
+                    <button onclick="log()" class="btn btn-primary w-100">登录</button>
+                <div class="text-center mt-3">
+                    <a href="/login_pwd/">账号密码登录</a>
+                </div>
+                <div class="text-center mt-4">
+                    还没有账号？<a href="/register/">立即注册</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    function send(){
+        if(document.getElementById("email").value==''){
+            let msg=document.getElementById("msg")
+            msg.innerText="请输入邮箱"
+            setTimeout(
+               ()=>{msg.innerText=''}
+               ,4000)
+            return
+        }
+        let btn=document.getElementById("btn")
+        let i = 60;
+        btn.disabled = true;
+        btn.innerText = i+'s';
+        const timer = setInterval(() => {
+            i--;
+            btn.innerText = i + 's';
+            if (i <= 0) {
+                clearInterval(timer);
+                btn.disabled = false;
+                btn.innerText = '获取验证码';
+              }
+            }, 1000);
+        let email=document.getElementById("email").value
+        api.post("/send_code/",{email:email}).then(
+            function(res){
+                return
+            }
+        ).catch(
+            function(err){
+                let msg=document.getElementById("msg")
+                msg.innerText="无效的邮箱号"
+                i=0
+                btn.disabled=false
+                btn.innerText="获取验证码"
+                setTimeout(
+                    ()=>{msg.innerText=''}
+                ,4000)
+            }
+        )
+    }
+    function log(){
+        let email=document.getElementById("email")
+        let ver=document.getElementById("ver")
+        console.log(email.value)
+        api.post("/log_email/",{email:email.value,code:ver.value}).then(
+            function(res){
+                d=res.data
+                localStorage.setItem('access_token',d.access_token)
+                localStorage.setItem('refresh_token',d.refresh_token)
+                localStorage.setItem("uid",res.data.uid)
+                if(localStorage.getItem("if_new")=="1"){
+                    location.href="/file/"
+                    localStorage.remove("if_new")
+
+                    return
+                }
+                location.href="/"
+            }
+        ).catch(
+            function(err){
+                d=err.response.data
+                let msg1=d.eerr
+                let msg2=d.verr
+                if(msg1!=''){
+                    email.style.border='2px solid red'
+                    let msg11=document.getElementById("msg1")
+                    msg11.innerText=msg1
+                    setTimeout(()=>{
+                        email.style.border='1px solid #DEE2E6'
+                        msg11.innerText=''
+                    },4000)
+                }
+                if(msg2!=''){
+                    ver.style.border='2px solid red'
+                    let msg22=document.getElementById("msg2")
+                    msg22.innerText=msg2
+                    setTimeout(()=>{
+                        ver.style.border='1px solid #DEE2E6'
+                        msg22.innerText=''
+                    },4000)
+                }
+            }
+        )
+    }
+</script>
+</body>
+</html>

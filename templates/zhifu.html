@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单支付 - 简易商城</title>
+    <!-- Bootstrap5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar{
+            width:36px;height:36px;border-radius:50%;object-fit:cover;
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部导航栏，和购物车页面风格统一 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">简易商城</a>
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/">商品列表</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/cart/">购物车</a></li>
+            <li class="nav-item"><a class="nav-link" href="/order/">我的订单</a></li>
+        </ul>
+
+        <!-- 右侧头像+个人主页 -->
+        <div class="d-flex align-items-center gap-3">
+            <a href="/user/" class="d-flex align-items-center gap-2 text-white text-decoration-none">
+                <img id="ava" src="https://via.placeholder.com/36" class="avatar">
+                <span>个人主页</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4" style="max-width:800px;">
+    <div class="card p-4">
+        <h2 class="h4 mb-4">订单确认 · 待支付</h2>
+
+        <!-- 订单基础信息 -->
+        <div class="border-bottom py-2 d-flex justify-content-between">
+            <span>订单编号</span>
+            <span id="code">ORD202609090001</span>
+        </div>
+        <div class="border-bottom py-2 d-flex justify-content-between">
+            <span>商品总额</span>
+            <span id="sum">¥298</span>
+        </div>
+        <div class="border-bottom py-2 d-flex justify-content-between">
+            <span>优惠抵扣</span>
+            <span class="text-danger">-¥100</span>
+        </div>
+        <div class="py-2 d-flex justify-content-between">
+            <span class="fw-bold fs-5">实付金额</span>
+            <span id="sum1" class="fw-bold text-danger fs-5">¥98</span>
+        </div>
+
+        <!-- 支付方式选择 -->
+        <div class="mt-4">
+            <h5 class="mb-3">选择支付方式</h5>
+            <div id="ali" class="border rounded p-3 mb-3 border-primary bg-light">
+                <input type="radio" onclick="ali()" name="paytype" id="alipay" checked class="form-check-input me-2">
+                <label for="alipay" class="form-check-label">支付宝</label>
+            </div>
+            <div id="wech" class="border rounded p-3 mb-3">
+                <input type="radio" onclick="wechat()" name="paytype" id="wechat" class="form-check-input me-2">
+                <label for="wechat" class="form-check-label">微信支付</label>
+            </div>
+        </div>
+
+        <!-- 按钮区域 -->
+        <div class="mt-4">
+            <button onclick="p()" class="btn btn-primary w-100 py-2 fs-5">立即支付 ¥<span id="price">98</span></button>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary w-100 py-2 mt-3">返回</a>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    if(!localStorage.getItem("refresh_token")){
+        location.href="/"
+    }
+    const pathArr = location.pathname.split('/')
+    const pk = pathArr.pop()
+    console.log(pk)
+    function ali(){
+        let ali=document.getElementById("ali")
+        let wech=document.getElementById("wech")
+        ali.className="border rounded p-3 mb-3 border-primary bg-light"
+        wech.className="border rounded p-3 mb-3"
+    }
+    function wechat(){
+        let ali=document.getElementById("ali")
+        let wech=document.getElementById("wech")
+        ali.className="border rounded p-3 mb-3"
+        wech.className="border rounded p-3 mb-3 border-primary bg-light"
+    }
+    api.get("/get_file/").then(
+        function(res){
+            let ava=document.getElementById("ava")
+            ava.src=baseURL+res.data.avatar_url
+        }
+    )
+    api.get("/pay/",{params:{order_code:pk}}).then(
+        function(res){
+            let sum=document.getElementById("sum")
+            let sum1=document.getElementById("sum1")
+            let price=document.getElementById("price")
+            let co=document.getElementById("code")
+            co.innerText=pk
+            price.innerText=res.data.sum1
+            sum.innerText="¥"+res.data.sum
+            sum1.innerText="¥"+res.data.sum1
+        }
+    )
+    function p(){
+        localStorage.setItem("cod",pk)
+        location.href="/p/"
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的订单 - 简易商城</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar{
+            width:36px;height:36px;border-radius:50%;object-fit:cover;
+        }
+        .goods-img{
+            width:60px;height:60px;object-fit:cover;border-radius:6px;
+        }
+        .order-item{
+            border:1px solid #e9ecef;
+            border-radius:8px;
+            margin-bottom:16px;
+        }
+        @media (max-width:768px){
+            .order-item{
+                padding:1.2rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">简易商城</a>
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/">商品列表</a></li>
+            <li class="nav-item"><a class="nav-link" href="/cart/">购物车</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/order/">我的订单</a></li>
+        </ul>
+        <!-- 右侧头像+个人主页 -->
+        <div class="d-flex align-items-center gap-3">
+            <a href="/user/" class="d-flex align-items-center gap-2 text-white text-decoration-none">
+                <img id="avatar" src="https://via.placeholder.com/36" class="avatar">
+                <span>个人主页</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div id="con" class="container">
+    <h3 class="mb-4">我的订单</h3>
+
+    <!-- 订单筛选标签，手机自动换行 -->
+    <div class="mb-4 d-flex flex-wrap gap-2">
+        <button onclick="lt(this)" id="b1" class="btn btn-outline-primary">全部订单</button>
+        <button onclick="lt(this)" id="b2" class="btn btn-outline-primary">未付款</button>
+        <button onclick="lt(this)" id="b3" class="btn btn-outline-primary">待发货</button>
+        <button onclick="lt(this)" id="b4" class="btn btn-outline-primary">待收货</button>
+        <button onclick="lt(this)" id="b5" class="btn btn-outline-primary">已完成</button>
+    </div>
+
+    <!-- 订单1 -->
+<!--    <div class="order-item p-4 shadow-sm">-->
+<!--        <div class="d-flex flex-md-row flex-column justify-content-between align-items-start mb-3 gap-2">-->
+<!--            <span>订单编号：ORD20260901001</span>-->
+<!--            <span class="text-success">已完成</span>-->
+<!--        </div>-->
+<!--        <hr>-->
+<!--        <div class="d-flex align-items-center gap-3 mb-3">-->
+<!--            <img src="https://via.placeholder.com/60" class="goods-img">-->
+<!--            <div>-->
+<!--                <div>无线降噪耳机</div>-->
+<!--                <div class="text-muted">¥299 × 1</div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="d-flex flex-md-row flex-column justify-content-between align-items-start gap-3">-->
+<!--            <span>实付金额：<strong class="fs-5">¥299</strong></span>-->
+<!--            <button class="btn btn-outline-primary">查看详情</button>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <!-- 订单2 -->
+<!--    <div class="order-item p-4 shadow-sm">-->
+<!--        <div class="d-flex flex-md-row flex-column justify-content-between align-items-start mb-3 gap-2">-->
+<!--            <span>订单编号：ORD20260901002</span>-->
+<!--            <span class="text-warning">待发货</span>-->
+<!--        </div>-->
+<!--        <hr>-->
+<!--        <div class="d-flex align-items-center gap-3 mb-3">-->
+<!--            <img src="https://via.placeholder.com/60" class="goods-img">-->
+<!--            <div>-->
+<!--                <div>智能运动手表</div>-->
+<!--                <div class="text-muted">¥699 × 2</div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="d-flex flex-md-row flex-column justify-content-between align-items-start gap-3">-->
+<!--            <span>实付金额：<strong class="fs-5">¥1398</strong></span>-->
+<!--            <button class="btn btn-outline-primary">查看详情</button>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; 订单3 &ndash;&gt;-->
+<!--    <div class="order-item p-4 shadow-sm">-->
+<!--        <div class="d-flex flex-md-row flex-column justify-content-between align-items-start mb-3 gap-2">-->
+<!--            <span>订单编号：ORD20260901003</span>-->
+<!--            <span class="text-danger">待付款</span>-->
+<!--        </div>-->
+<!--        <hr>-->
+<!--        <div class="d-flex align-items-center gap-3 mb-3">-->
+<!--            <img src="https://via.placeholder.com/60" class="goods-img">-->
+<!--            <div>-->
+<!--                <div>机械键盘青轴</div>-->
+<!--                <div class="text-muted">¥459 × 1</div>-->
+<!--            </div>-->
+<!--            <img src="https://via.placeholder.com/60" class="goods-img">-->
+<!--            <div>-->
+<!--                <div>机械键盘青轴</div>-->
+<!--                <div class="text-muted">¥459 × 1</div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="d-flex flex-md-row flex-column justify-content-between align-items-start gap-3">-->
+<!--            <span>实付金额：<strong class="fs-5">¥459</strong></span>-->
+<!--            <button class="btn btn-primary">去付款</button>-->
+<!--        </div>-->
+<!--    </div>-->
+
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    if(!localStorage.getItem("refresh_token")){
+        location.href="/"
+    }
+    api.get("/get_file/").then(
+        function(res){
+            let ava=document.getElementById("avatar")
+            ava.src=baseURL+res.data.avatar_url
+        }
+    )
+    function po(pl){
+        api.get("/get_order/",{params:{state:pl}}).then(
+            function(res){
+                let da=res.data
+                da.reverse()
+                let con=document.getElementById("con")
+                let li=[]
+                if(da.length==0){
+                    con.innerHTML+=`
+                        <div class="text-center text-secondary py-5">
+                            <p class="fs-5">暂时没有商品</p>
+                        </div>
+                    `
+                }
+                for(n=0;n<da.length;n++){
+                    let d=da[n]
+                    let su=Number(d.count)*Number(d.price)
+                    if(li.includes(d.code)){
+                        console.log(d.code)
+                        let iii=document.getElementById(d.code)
+                        let hh=document.getElementById("hh"+d.code)
+                        iii.innerHTML+=`
+                            <a href="/detail/${d.id}"><img src="${baseURL}${d.img_url}" class="goods-img"></a>
+                            <div>
+                                <div>${d.name}</div>
+                                <div class="text-muted">¥${d.price} × ${d.count}</div>
+                            </div>
+                        `
+                        let nn=Number(hh.innerText.slice(1))
+                        nn+=d.price*d.count
+                        hh.innerText="¥"+nn
+                    }else{
+                        con.innerHTML+=`
+                            <div name="${d.state}" class="order-item p-4 shadow-sm">
+                                <div class="d-flex flex-md-row flex-column justify-content-between align-items-start mb-3 gap-2">
+                                    <span>订单编号：${d.code}</span>
+                                    <span class="text-danger">${d.state}</span>
+                                </div>
+                                <hr>
+                                <div id="${d.code}" class="d-flex align-items-center gap-3 mb-3">
+                                    <a href="/detail/${d.id}"><img src="${baseURL}${d.img_url}" class="goods-img"></a>
+                                    <div>
+                                        <div>${d.name}</div>
+                                        <div class="text-muted">¥${d.price} × ${d.count}</div>
+                                    </div>
+
+                                </div>
+                                <div class="d-flex flex-md-row flex-column justify-content-between align-items-start gap-3">
+                                    <span>共计金额：<strong id="hh${d.code}" class="fs-5">¥${su-100}</strong></span>
+                                    <a href="/order_de/${d.code}" class="btn btn-outline-primary">查看详情</a>
+                                </div>
+                            </div>
+                        `
+                        li.push(d.code)
+                    }
+                }
+            }
+        )
+    }
+    if(!localStorage.getItem("lh")){localStorage.setItem("lh","b1全部订单")}
+    let bid=localStorage.getItem("lh").slice(0,2)
+    let but=document.getElementById(bid)
+    but.className="btn btn-primary"
+    let lo=["b1","b2","b3","b4","b5"]
+    for(i=0;i<lo.length;i++){
+        let di=lo[i]
+        if(di!=bid){
+            let bt=document.getElementById(di)
+            bt.className="btn btn-outline-primary"
+        }
+    }
+    po(localStorage.getItem("lh").slice(2))
+    function lt(btn){
+        let lo=["b1","b2","b3","b4","b5"]
+        let state=["未付款","待发货","待收获","已完成"]
+        for(i=0;i<lo.length;i++){
+            let di=lo[i]
+            if(di!=btn.id){
+                let bt=document.getElementById(di)
+                bt.className="btn btn-outline-primary"
+            }
+        }
+        btn.className="btn btn-primary"
+        localStorage.setItem("lh",btn.id+btn.innerText)
+        location.reload()
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品列表 - 简易商城</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar{
+            width:36px;height:36px;border-radius:50%;object-fit:cover;
+        }
+        .goods-card{
+            height:100%;
+        }
+        .goods-img{
+            height:180px;
+            object-fit:cover;
+        }
+    </style>
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">简易商城</a>
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link active" href="/">商品列表</a></li>
+            <li class="nav-item"><a class="nav-link" id="666" href="/cart/">购物车</a></li>
+            <li class="nav-item"><a class="nav-link" id="777" href="/order/">我的订单</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+            <a id="ge" href="/login_pwd/" class="d-flex align-items-center gap-2 text-white text-decoration-none">
+                <img id="avatar" src="../media/avatar/img.png" class="avatar">
+                <span id="iioo">登录</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h3>全部商品</h3>
+            <span><strong style="color:#03DB6B" id="msg"></strong></span>
+        </div>
+        <div class="col-auto">
+            <select id="ppii" class="form-select" onchange="jj(this)">
+                <option>全部分类</option>
+                <option>数码耳机</option>
+                <option>键盘外设</option>
+                <option>智能穿戴</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="goods" class="row g-4">
+
+    <!--        <div class="col-md-4">-->
+<!--            <div class="card goods-card">-->
+<!--                <img src="https://via.placeholder.com/300x180" class="card-img-top goods-img">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">机械键盘青轴</h5>-->
+<!--                    <p class="text-danger fs-5 mb-2">¥459</p>-->
+<!--                    <p class="text-muted mb-3">库存：88</p>-->
+<!--                    <button class="btn btn-primary w-100">加入购物车</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="col-md-4">-->
+<!--            <div class="card goods-card">-->
+<!--                <img src="https://via.placeholder.com/300x180" class="card-img-top goods-img">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">智能运动手表</h5>-->
+<!--                    <p class="text-danger fs-5 mb-2">¥699</p>-->
+<!--                    <p class="text-muted mb-3">库存：42</p>-->
+<!--                    <button class="btn btn-primary w-100">加入购物车</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="col-md-4">-->
+<!--            <div class="card goods-card">-->
+<!--                <img src="../media/good_img/img_5.png" class="card-img-top goods-img">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">无线蓝牙耳机</h5>-->
+<!--                    <p class="text-danger fs-5 mb-2">¥169</p>-->
+<!--                    <p class="text-muted mb-3">库存：203</p>-->
+<!--                    <button class="btn btn-primary w-100">加入购物车</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="col-md-4">-->
+<!--            <div class="card goods-card">-->
+<!--                <img src="https://via.placeholder.com/300x180" class="card-img-top goods-img">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">游戏鼠标</h5>-->
+<!--                    <p class="text-danger fs-5 mb-2">¥199</p>-->
+<!--                    <p class="text-muted mb-3">库存：76</p>-->
+<!--                    <button class="btn btn-primary w-100">加入购物车</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="col-md-4">-->
+<!--            <div class="card goods-card">-->
+<!--                <img src="https://via.placeholder.com/300x180" class="card-img-top goods-img">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">智能手环</h5>-->
+<!--                    <p class="text-danger fs-5 mb-2">¥129</p>-->
+<!--                    <p class="text-muted mb-3">库存：155</p>-->
+<!--                    <button class="btn btn-primary w-100">加入购物车</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    let iioo=document.getElementById("iioo")
+    if(true){
+        if(localStorage.getItem("refresh_token")){
+            let ge=document.getElementById("ge")
+            ge.href="/user/"
+            iioo.innerText='个人主页'
+        }
+        if(!localStorage.getItem("refresh_token")){
+            let kkk=document.getElementById("666")
+            let kk=document.getElementById("777")
+            kkk.href="#"
+            kk.href="#"
+            kkk.onclick=function(){
+                let rr=confirm("你还未登录,请先登录")
+                if(!rr){return}
+                location.href="/login_pwd/"
+            }
+            kk.onclick=function(){
+                let rr=confirm("你还未登录,请先登录")
+                if(!rr){return}
+                location.href="/login_pwd/"
+            }
+        }
+        let ppii = document.getElementById("ppii")
+        ppii.value=localStorage.getItem("cate")
+        if(localStorage.getItem("cate")=="0"){
+            ppii.value="全部分类"
+        }
+        let ge=document.getElementById("ge")
+        if(localStorage.getItem("refresh_token")){
+            api.get("/get_file/").then(
+                function(res){
+                    d=res.data
+                    let ava=document.getElementById("avatar")
+                    console.log(baseURL+d.avatar_url)
+                    ava.src=baseURL+d.avatar_url
+                }
+            ).catch(
+                function(err){
+                    console.log(err.response)
+                }
+            )
+        }
+        if(!localStorage.getItem("cate")){
+            localStorage.setItem("cate","0")
+        }
+        console.log(localStorage.getItem("cate"))
+        api.get(`/index/${localStorage.getItem("cate")}`,{params:{uid:localStorage.getItem("uid")}}).then(
+            function(res){
+                let da=res.data
+                console.log(da)
+                l=da.length
+                let goods=document.getElementById("goods")
+                for(let i=0;i<l;i++){
+                    goods.innerHTML+=`
+                        <div class="col-md-4">
+                            <div class="card goods-card">
+                               <span id="s${da[i].id}" style="font-size:35px" class="position-absolute top-0 end-0 m-2 text-warning">${da[i].c}</span>
+                                <a href="/detail/${da[i].id}"><img id="${da[i].id}"  src="${baseURL}${da[i].img_url}" class="card-img-top goods-img"></a>
+                                <div class="card-body">
+                                    <h5 class="card-title">${da[i].name}</h5>
+                                    <p class="text-danger fs-5 mb-2">¥${da[i].price}</p>
+                                    <p class="text-muted mb-3">库存：${da[i].storage}</p>
+                                    <button onclick="add(this)" name="${da[i].name}" id="id${da[i].id}" class="btn btn-primary flex-grow-1 ll">加入购物车</button>
+                                    <button id="bu${da[i].id}" onclick="buy(this)" class="btn btn-danger flex-grow-1">立即购买</button>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+            }
+        )
+    }
+    if(!localStorage.getItem("refresh_token")){
+        let mc=document.getElementsByClassName("btn btn-primary w-100 ll")
+        console.log(mc)
+        for(i=0;i<mc.length;i++){
+            console.log(mc[i].onclick)
+            mc[i].onclick=function(){lo()}
+        }
+    }
+    function add(btn){
+        btn.disabled=true
+        let id=btn.id.slice(2)
+        btn.disabled=true
+        api.post("/shop_cart/",{id:id}).then(
+            function(res){
+                btn.disabled=false
+                let s=document.getElementById("s"+id)
+                s.innerText="★"
+                alert(`${res.data.num}个  [ ${btn.name} ]  已经加入你的购物车!`)
+            }
+        )
+        setTimeout(()=>{btn.disabled=false},100)
+    }
+    function jj(btn){
+        let c=btn.value
+        console.log(c)
+        if(c=="全部分类"){
+            localStorage.setItem("cate","0")
+            location.href="/"
+        }else{
+            localStorage.setItem("cate",c)
+            location.href="/"
+        }
+    }
+    function lo(){
+        alert("你需要先登录")
+    }
+    function buy(btn){
+        if(!confirm("你确定要购买此商品?")){
+            return
+        }
+        let id=btn.id.slice(2)
+        let id_list=[id]
+        let count_list=["1"]
+        api.post("/tijiao/",{id_list:id_list,count_list:count_list}).then(
+            function(res){
+                let code=res.data.order_code
+                location.href=`/zhifu/${code}`
+            }
+        ).catch(
+            function(err){
+                if(err.response.status==400){
+                    alert(`[ ${err.response.data.name} ] 库存不足`)
+                }
+            }
+        )
+    }
+</script>
+</body>
+</html>

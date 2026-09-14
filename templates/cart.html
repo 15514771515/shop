@@ -1,0 +1,446 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商城</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .goods-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .avatar{
+            width:36px;height:36px;border-radius:50%;object-fit:cover;
+        }
+        /* 优化移动端间距 */
+        @media (max-width:767px){
+            .card{
+                margin-bottom:1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">简易商城</a>
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/">商品列表</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/cart/">购物车</a></li>
+            <li class="nav-item"><a class="nav-link" href="/order/">我的订单</a></li>
+        </ul>
+
+        <!-- 右侧头像+个人主页 -->
+        <div class="d-flex align-items-center gap-3">
+            <a href="/user/" class="d-flex align-items-center gap-2 text-white text-decoration-none">
+                <img id="ava" src="https://via.placeholder.com/36" class="avatar">
+                <span>个人主页</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <!-- 左侧购物车列表，手机100%宽度，电脑7列 -->
+        <div class="col-md-7 mb-4">
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">我的购物车</h4>
+                    <button id="ddd" onclick="del_all()" class="btn btn-danger btn-sm" disabled>删除选中</button>
+                </div>
+                <!-- table‑responsive：手机表格横向滚动，不会挤坏布局 -->
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="checkAll">&nbsp<lable id="la" for="checkAll">全选</lable>
+
+                            </th>
+
+                            <th>单价</th>
+                            <th>数量</th>
+                            <th>小计</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="goods">
+                        <!-- 商品1 -->
+
+                            <!-- 商品2 -->
+<!--                            <tr>-->
+<!--                                <td>-->
+<!--                                    <div class="d-flex align-items-center gap-3">-->
+<!--                                        <input type="checkbox">-->
+<!--                                        <img src="https://via.placeholder.com/60" class="goods-img">-->
+<!--                                        <div>-->
+<!--                                            <div>机械键盘青轴</div>-->
+<!--                                            <div class="text-muted">¥459 数量1</div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </td>-->
+<!--                                <td>¥459</td>-->
+<!--                                <td>1</td>-->
+<!--                                <td>¥459</td>-->
+<!--                                <td><button class="btn btn-sm text-danger">删除</button></td>-->
+<!--                            </tr>-->
+<!--                            &lt;!&ndash; 商品3 &ndash;&gt;-->
+<!--                            <tr>-->
+<!--                                <td>-->
+<!--                                    <div class="d-flex align-items-center gap-3">-->
+<!--                                        <input type="checkbox">-->
+<!--                                        <img src="https://via.placeholder.com/60" class="goods-img">-->
+<!--                                        <div>-->
+<!--                                            <div>智能运动手表</div>-->
+<!--                                            <div class="text-muted">¥699 数量2</div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </td>-->
+<!--                                <td>¥699</td>-->
+<!--                                <td>2</td>-->
+<!--                                <td>¥1398</td>-->
+<!--                                <td><button class="btn btn-sm text-danger">删除</button></td>-->
+                            </tr>
+                         <span id="lloo" style="color:#A151E0"></span>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧订单确认，手机占满一行，电脑4列 -->
+        <div class="col-md-4">
+            <div class="card p-4 sticky-md-top">
+                <h4 class="text-center mb-4">订单确认</h4>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>商品总额</span>
+                    <span id="suu">¥0</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>优惠抵扣</span>
+                    <span class="text-danger">-¥100</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-4 fs-5 fw-bold">
+                    <span>实付金额</span>
+                    <span id="in">¥0</span>
+                </div>
+                <button onclick="oom()" id="sub" class="btn btn-primary w-100 py-2 fs-5" disabled>提交订单</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    if(!localStorage.getItem("refresh_token")){
+        location.href="/"
+    }
+    function cou(){
+        return
+    }
+    let ava=document.getElementById("ava")
+    api.get("/get_file/").then(
+            function(res){
+                d=res.data
+                console.log(baseURL+d.avatar_url)
+                ava.src=baseURL+d.avatar_url
+            }
+        ).catch(
+            function(err){
+                console.log(err.response)
+            }
+        )
+    let suu=0
+    api.get("/shop_cart/").then(
+        function(res){
+            d=res.data
+
+            let goods=document.getElementById("goods")
+            if(d.length==0){
+                goods.innerHTML+=`
+                    <tbody id="goods">
+    <tr id="emptyTip">
+        <td colspan="5" class="text-center py-5 text-muted">
+            你还没有收藏任何商品
+        </td>
+    </tr>
+
+</tbody>
+                `
+            }
+            for(i=0;i<d.length;i++){
+                suu+=Number(d[i].price)*Number(d[i].count)
+                goods.innerHTML+=`
+                             <tr id="t${d[i].id}" name="${d[i].count}">
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <input class="che" name="${d[i].sum}" onchange="jjj(this)" type="checkbox" id="che${d[i].id}" unchecked>
+                                        <a href="/detail/${d[i].id}"><img src="${baseURL}${d[i].img_url}" class="goods-img"></a>
+                                        <div>
+                                            <div>${d[i].name}</div>
+                                            <div class="text-muted">¥${d[i].price} 数量<span id="c${d[i].id}">${d[i].count}</span></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td id="p${d[i].id}">¥${d[i].price}</td>
+                                <td id="cc${d[i].id}">${d[i].count}</td>
+                                <td id="su${d[i].id}">¥${d[i].sum}</td>
+                                <td><button id="g${d[i].id}" name="${d[i].count}" onclick="del(this)" class="btn btn-sm text-danger">删除</button></td>
+                            </tr>
+                `
+            }
+            let ss=document.getElementById("suu")
+            let ii=document.getElementById("in")
+            if(suu>100){ii.innerText=`¥0`}
+            ss.innerText=`¥0`
+        }
+    )
+    let ches=document.getElementsByClassName("che")
+
+    function del(btn){
+        let r=confirm("你确定要删除该商品?")
+        if(!r){return}
+        let gid=btn.id.slice(1)
+        console.log(btn.name)
+        api.delete(`/shop_cart/?id=${gid}`).then(
+            function(res){
+                let ll=document.getElementById("lloo")
+                ll.innerText="已删除商品"+" [ "+res.data.name+" ] "+"*1"
+                setTimeout(()=>{
+                    ll.innerText=""
+                },7000)
+                let p=document.getElementById("p"+gid)
+                let q=Number(p.innerText.slice(1))
+                if(Number(btn.name)>1){
+                    let c=document.getElementById("c"+gid)
+                    let cc=document.getElementById("cc"+gid)
+                    let su=document.getElementById("su"+gid)
+                    let y=Number(su.innerText.slice(1))
+                    su.innerText=`¥${y-q}`
+                    let ss=document.getElementById("suu")
+                    let ii=document.getElementById("in")
+                    let oq=Number(ss.innerText.slice(1))
+                    let or=Number(ii.innerText.slice(1))
+                    let ry=document.getElementById("che"+gid)
+                    if(ry.checked==true){
+                        ss.innerText=`¥${oq-q}`
+                        if(or>q){ii.innerText=`¥${or-q}`}else{ii.innerText="¥0"}
+                    }
+                    let n=Number(c.innerText)-1
+                    c.innerText=n
+                    cc.innerText=n
+                    let m=Number(btn.name)-1
+                    btn.name=m
+                    return
+                }
+                let ii=document.getElementById("in")
+                let ss=document.getElementById("suu")
+                let oq=Number(ss.innerText.slice(1))
+                let or=Number(ii.innerText.slice(1))
+                let ry=document.getElementById("che"+gid)
+                if(ry.checked==true){
+                    ss.innerText=`¥${oq-q}`
+                    if(or>q){ii.innerText=`¥${or-q}`}else{ii.innerText="¥0"}
+                }
+                let chh=document.getElementById("che"+gid)
+                chh.checked=false
+                let ches=document.getElementsByClassName("che")
+                let uu=0
+                for(n=0;n<ches.length;n++){
+                    if(ches[n].checked==true){
+                        uu=1
+                    }
+                }
+                console.log(uu)
+                if(uu==0){
+                    let ddd=document.getElementById("ddd")
+                    let sub=document.getElementById("sub")
+                    sub.disabled=true
+                    ddd.disabled=true
+                }
+
+                if(chh.checked==true){
+                    ss.innerText=`¥${oq-q}`
+                    if(or>q){ii.innerText=`¥${or-q}`}else{ii.innerText="0"}
+                }
+                let t=document.getElementById("t"+gid)
+                t.remove()
+            }
+        )
+    }
+    let all=document.getElementById("checkAll")
+    all.onchange=function(e){
+        if(e.target.checked){
+            let li=document.getElementsByClassName("che")
+            let la=document.getElementById("la")
+            let ddd=document.getElementById("ddd")
+            let sub=document.getElementById("sub")
+            let oq=document.getElementById("suu")
+            let qq=document.getElementById("in")
+            if(suu>100){
+                qq.innerText=`¥${suu-100}`
+            }else{
+                qq.innerText="¥0"
+            }
+            oq.innerText=`¥${suu}`
+            console.log(li.length)
+            if(li.length!=0){
+                sub.disabled=false
+                ddd.disabled=false
+            }
+            la.innerText="取消全选"
+            for(l=0;l<li.length;l++){
+                li[l].checked=true
+            }
+        }
+        if(!e.target.checked){
+            let li=document.getElementsByClassName("che")
+            let la=document.getElementById("la")
+            let ddd=document.getElementById("ddd")
+            let sub=document.getElementById("sub")
+            let oq=document.getElementById("suu")
+            let qq=document.getElementById("in")
+            oq.innerText="¥0"
+            qq.innerText="¥0"
+
+            sub.disabled=true
+            ddd.disabled=true
+
+            la.innerText="全选"
+            for(l=0;l<li.length;l++){
+                li[l].checked=false
+            }
+        }
+    }
+    function jjj(btn){
+        if(btn.checked==true){
+            let gid=btn.id.slice(3)
+            let ddd=document.getElementById("ddd")
+            let sub=document.getElementById("sub")
+            let zon=document.getElementById("suu")
+            let zo=document.getElementById("in")
+            let n1=Number(zon.innerText.slice(1))
+            let n2=Number(zo.innerText.slice(1))
+            let oi=Number(document.getElementById("su"+gid).innerText.slice(1))
+            zon.innerText=`¥${n1+oi}`
+            if(n2+oi>100){
+                zo.innerText=`¥${n1+oi-100}`
+            }else{
+                zo.innerText="¥0"
+            }
+            sub.disabled=false
+            ddd.disabled=false
+        }else if(btn.checked==false){
+            let gid=btn.id.slice(3)
+            let ches=document.getElementsByClassName("che")
+            let zon=document.getElementById("suu")
+            let zo=document.getElementById("in")
+            let n1=Number(zon.innerText.slice(1))
+            let n2=Number(zo.innerText.slice(1))
+            let oi=Number(document.getElementById("su"+gid).innerText.slice(1))
+            zon.innerText=`¥${n1-oi}`
+            if(n2>oi){
+                zo.innerText=`¥${n2-oi}`
+            }else{
+                zo.innerText="¥0"
+            }
+            let uu=0
+            for(n=0;n<ches.length;n++){
+                if(ches[n].checked==true){
+                    uu=1
+                }
+            }
+            if(uu==0){
+                let ddd=document.getElementById("ddd")
+                ddd.disabled=true
+                let sub=document.getElementById("sub")
+                sub.disabled=true
+            }
+        }
+    }
+    function del_all(){
+        let r=confirm("你确定要删除这些商品吗")
+        if(!r){return}
+        let ches=document.getElementsByClassName("che")
+        let li=[]
+        for(p=0;p<ches.length;p++){
+            if(ches[p].checked==true){
+                li.push(ches[p].id.slice(3))
+            }
+        }
+        console.log(li)
+        api.post("/del_checked/",{id_li:li}).then(
+            function(res){
+                let al=0
+                let dd=document.getElementById("ddd")
+                dd.disabled=true
+                let sub=document.getElementById("sub")
+                sub.disabled=true
+                for(ll=0;ll<li.length;ll++){
+                    let trr=document.getElementById("t"+li[ll])
+                    let sum=Number(document.getElementById("su"+li[ll]).innerText.slice(1))
+                    let chee=document.getElementById("che"+li[ll])
+                    if(chee.checked==true){
+                        al+=sum
+                    }
+                    trr.remove()
+
+                }
+                let suu=document.getElementById("suu")
+                let inn=document.getElementById("in")
+                let rt=suu.innerText.slice(1)
+                let ry=inn.innerText.slice(1)
+                suu.innerText=`¥${Number(rt)-al}`
+                if(Number(ry)>al){
+                    inn.innerText=`¥${Number(ry)-al}`
+                }else{inn.innerText="¥"+0}
+            }
+        )
+    }
+    function oom(){
+        let rr=confirm("你确定提交订单吗?")
+        if(!rr){return}
+        let ch=document.getElementsByClassName("che")
+        let lis=[]
+        let c_li=[]
+        for(i=0;i<ch.length;i++){
+            if(ch[i].checked==true){
+                let ii=ch[i].id.slice(3)
+                let cc=document.getElementById("cc"+ii).innerText
+                let id=ch[i].id.slice(3)
+                c_li.push(cc)
+                lis.push(id)
+            }
+        }
+        api.post("/tijiao/",{id_list:lis,count_list:c_li}).then(
+            function(res){
+                for(i=0;i<lis.length;i++){
+                    let chee=document.getElementById("t"+lis[i])
+                    let lloo=document.getElementById("lloo")
+                    lloo.innerText="订单提交成功"
+                    setTimeout(()=>{
+                        lloo.innerText=""
+                    },7000)
+                    chee.remove()
+                    location.href=`/zhifu/${res.data.order_code}`
+                }
+            }
+        ).catch(
+            function(err){
+                if(err.response.status==400){
+                    alert(`[ ${err.response.data.name} ] 库存不足`)
+                }
+            }
+        )
+    }
+</script>
+</body>
+</html>

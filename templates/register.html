@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 简易商城</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .pp{
+            color:red
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card p-5">
+                <h3 class="text-center mb-4">简易商城 - 用户注册</h3>
+                <div class="mb-3">
+                    <input id='username' type="text" class="form-control" placeholder="请设置用户名(5到12位纯数字)">
+                    <span id="msg1" class="pp"></span>
+                </div>
+                <div class="mb-0 d-flex gap-2">
+                    <input id="email" type="email" class="form-control" placeholder="请输入邮箱">
+                    <button onclick="send()" id="btn" class="btn btn-outline-secondary">获取验证码</button>
+                </div>
+                <span id="msg2" class="pp"></span>
+                <div class="mb-3 mt-3">
+                    <input id="password1" type="password" class="form-control" placeholder="请设置6‑16位密码">
+                    <span id="msg4" class="pp"></span>
+                </div>
+                <div class="mb-3">
+                    <input id="password2" type="password" class="form-control" placeholder="再次输入密码">
+                    <span id="msg5" class="pp"></span>
+                </div>
+                <div class="mb-0 d-flex gap-2">
+                    <input id="code" type="text" class="form-control flex-grow-1" placeholder="请输入邮箱验证码">
+                </div>
+                <span id="msg3" class="pp"></span>
+                <button onclick="subm()" class="btn btn-primary w-100 mt-4">注册</button>
+                <div class="text-center mt-4">
+                    已有账号？<a href="/login_pwd/">返回登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    function isdigit(str){
+        return /^\d+$/.test(str);
+    }
+    function checkEmail(email) {
+        const reg = /^[a-zA-Z0-9_\-\.]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+$/;
+        return reg.test(email);
+    }
+    function send(){
+        let btn=document.getElementById("btn")
+        let i = 60;
+        btn.disabled = true;
+        btn.innerText = i+'s';
+        const timer = setInterval(() => {
+            i--;
+            btn.innerText = i + 's';
+            if (i <= 0) {
+                clearInterval(timer);
+                btn.disabled = false;
+                btn.innerText = '获取验证码';
+              }
+            },1000);
+        let email=document.getElementById("email").value
+        if(!checkEmail(email)){
+            let msg2=document.getElementById("msg2")
+            msg2.innerText="无效的邮箱号"
+            i=0
+            btn.disabled=false
+            btn.innerText="获取验证码"
+            let e=document.getElementById("email")
+            e.style.border="2px solid red"
+            setTimeout(()=>{
+                e.style.border="1px solid #DEE2E6"
+                msg2.innerText=''
+            },6000)
+            return
+        }
+        api.post("/r_send_code/",{email:email}).then(
+            function(res){
+                localStorage.setItem("email",email)
+                return
+            }
+        ).catch(
+            function(err){
+                if(err.status!=403){
+                    return
+                }
+                let e=document.getElementById("email")
+                let msg2=document.getElementById("msg2")
+                msg2.innerText="无效的邮箱号"
+                e.style.border="2px solid red"
+                setTimeout(()=>{
+                    e.style.border="1px solid #DEE2E6"
+                    msg2.innerText=''
+                },5000)
+                i=0
+                btn.disabled=false
+                btn.innerText="获取验证码"
+            }
+        )
+    }
+    function subm(){
+        let username=document.getElementById("username")
+        let email=document.getElementById("email")
+        let code=document.getElementById("code")
+        let password1=document.getElementById("password1")
+        let password2=document.getElementById("password2")
+        let w=true
+        if(!isdigit(username.value) || username.value.length<5 || username.value.length>12){
+            let msg1=document.getElementById("msg1")
+            w=false
+            msg1.innerText="账号必须是5到12位纯数字"
+            username.style.border="2px solid red"
+
+        }
+        if(email.value!=localStorage.getItem("email")){
+            let msg2=document.getElementById("msg2")
+            w=false
+            msg2.innerText="邮箱号不正确"
+            email.style.border="2px solid red"
+        }
+        if(password1.value.length<6 || password1.value.length>16){
+            let msg4=document.getElementById("msg4")
+            w=false
+            msg4.innerText="密码长度不要超出6到16范围"
+            password1.style.border="2px solid red"
+        }
+        if(password2.value!=password1.value){
+            let msg5=document.getElementById("msg5")
+            msg5.innerText="与原密码不一致"
+            w=false
+            password2.style.border="2px solid red"
+        }
+        setTimeout(()=>{
+            let msg1=document.getElementById("msg1")
+            let msg2=document.getElementById("msg2")
+            let msg4=document.getElementById("msg4")
+            let msg5=document.getElementById("msg5")
+            msg1.innerText=''
+            msg2.innerText=''
+            msg4.innerText=''
+            msg5.innerText=''
+            username.style.border="1px solid #DEE2E6"
+            email.style.border="1px solid #DEE2E6"
+            password1.style.border="1px solid #DEE2E6"
+            password2.style.border="1px solid #DEE2E6"
+        },5000)
+        if(w==true){
+            api.post("/res/",{username:username.value,password:password1.value,email:email.value,code:code.value}).then(
+                function(res){
+                    alert("注册成功,请登录")
+                    localStorage.setItem("if_new","1")
+                    location.href="/login_pwd/"
+                }
+            ).catch(
+                function(err){
+                    if(err.response.status==400){
+                        let msg3=document.getElementById("msg3")
+                        msg3.innerText="验证码错误或已过期"
+                        code.style.border="2px solid red"
+                        setTimeout(()=>{
+                            msg3.innerText=""
+                            code.style.border="2px solid #DEE2E6"
+                        },5000)
+                    }
+                    if(err.response.status==402){
+                        let msg1=document.getElementById("msg1")
+                        username.style.border="2px solid red"
+                        msg1.innerText="该账号已存在"
+                        setTimeout(()=>{
+                            msg1.innerText=""
+                            username.style.border="2px solid #DEE2E6"
+                        },5000)
+                    }
+                    if(err.response.status==403){
+                        let msg2=document.getElementById("msg2")
+                        email.style.border="2px solid red"
+                        msg2.innerText="该邮箱已经注册过账号了"
+                        setTimeout(()=>{
+                            msg2.innerText=""
+                            email.style.border="2px solid #DEE2E6"
+                        },5000)
+                    }
+                }
+            )
+        }
+    }
+</script>
+</body>
+</html>

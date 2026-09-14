@@ -1,0 +1,287 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar{
+            width:36px;height:36px;border-radius:50%;object-fit:cover;
+        }
+        .detail-img{
+            width:100%;
+            max-height:420px;
+            object-fit:contain;
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">简易商城</a>
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link active" href="/">商品列表</a></li>
+            <li class="nav-item"><a class="nav-link" id="666" href="/cart/">购物车</a></li>
+            <li class="nav-item"><a class="nav-link" id="777" href="/order/">我的订单</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+            <a id="ge" href="/login_pwd/" class="d-flex align-items-center gap-2 text-white text-decoration-none">
+                <img id="avatar" src="../media/avatar/img.png" class="avatar">
+                <span id="iioo">登录</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <a href="javascript:history.back()" class="btn btn-outline-primary mb-3">← 返回</a>
+    <h3 class="mb-4">订单详情</h3>
+
+    <!-- 订单基础信息卡片 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>订单编号：<span id="code"></span></h5>
+                <span id="state" class="text-danger fs-5">待发货</span>
+            </div>
+            <hr>
+            <h6 class="mb-3">商品信息</h6>
+            <div id="goods" class="d-flex align-items-center gap-3 flex-wrap">
+<!--                <img id="good_img" src="../media/good_img/img.png" alt="商品图">-->
+<!--                <div>-->
+<!--                    <p id="name" class="mb-1">智能运动手表</p>-->
+<!--                    <p id="p" class="text-muted mb-0">¥699 × 2</p>-->
+<!--                </div>-->
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>商品总额：</strong><span id="raw">¥1498</span></p>
+                    <p class="mb-1"><strong>优惠抵扣：</strong><span class="text-danger">-¥100</span></p>
+                    <p class="mb-1"><strong>实付金额：</strong><span id="in" class="text-danger fs-5">¥1398</span></p>
+                    <p class="mb-1"><strong>下单时间：</strong><span id="time">2026-09-01 16:30:22</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>收货地址：</strong><span id="address"></span></p>
+                    <p class="mb-1"><strong>联系电话：</strong><span id="phone"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单状态说明 -->
+    <div class="card">
+        <div class="card-body">
+            <h6>订单状态</h6>
+            <p id="lj"></p>
+            <p><strong style="color:red" id="ol"></strong></p>
+            <span id="pri"></span>
+            <span id="dan"></span>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="refundModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">选择退款原因</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="refundReason" id="r1" value="不想要了">
+          <label class="form-check-label" for="r1">不想要了</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="refundReason" id="r2" value="商品与描述不符">
+          <label class="form-check-label" for="r2">商品与描述不符</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="refundReason" id="r3" value="质量问题">
+          <label class="form-check-label" for="r3">质量问题</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="refundReason" id="r4" value="发错货">
+          <label class="form-check-label" for="r4">发错货</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="radio" name="refundReason" id="r5" value="其他">
+          <label class="form-check-label" for="r5">其他</label>
+        </div>
+        <textarea id="refundRemark" class="form-control mt-3" placeholder="补充说明（选填）"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+        <button id="submitRefund" type="button" class="btn btn-primary">提交退款申请</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    if(!localStorage.getItem("refresh_token")){
+        location.href="/"
+    }
+    const pathArr = location.pathname.split('/')
+    const pk = pathArr.pop()
+    api.get("/get_file/").then(
+        function(res){
+            let ge=document.getElementById("ge")
+            let iioo=document.getElementById("iioo")
+            let ava=document.getElementById("avatar")
+            ava.src=baseURL+res.data.avatar_url
+            iioo.innerText="个人主页"
+            ge.href="/user/"
+        }
+    )
+    api.get("/order_de/",{params:{code:pk}}).then(
+        function(res){
+            let da=res.data
+            let code=document.getElementById("code")
+            let state=document.getElementById("state")
+            let raw=document.getElementById("raw")
+            let inn=document.getElementById("in")
+            let time=document.getElementById("time")
+            let address=document.getElementById("address")
+            let phone=document.getElementById("phone")
+            let lj=document.getElementById("lj")
+            let goods=document.getElementById("goods")
+            let ind=Number(da.ind)
+            for(i=1;i<=ind;i++){
+                let src=da['img'+i]
+                let price=da['price'+i]
+                let c=da["c"+i]
+                let n=da["name"+i]
+                goods.innerHTML+=`
+                    <img src="${baseURL}${src}" width="100" height="100" alt="商品图">
+                    <div>
+                        <p class="mb-1">${n}</p>
+                        <p class="text-muted mb-0">¥${price} × ${c}</p>
+                    </div>
+                `
+            }
+            code.innerText=pk
+            state.innerText=da.state
+            raw.innerText="¥"+da.sum
+            inn.innerText="¥"+(da.sum-100)
+            time.innerText=da.time
+            address.innerText=da.address
+            phone.innerText=da.phone
+            if(da.phone==''){
+                phone.innerText="未公开"
+            }
+            let pri=document.getElementById("pri")
+            let dan=document.getElementById("dan")
+            if(da.state=="未付款" && da.si>30){
+                let ol=document.getElementById("ol")
+                ol.innerText="订单超时,已取消"
+                return
+            }
+            if(da.state=="未付款" && Number(da.si)<=30){
+                let ol=document.getElementById("ol")
+                ol.innerText=`还剩${30-da.si}分钟`
+                lj.innerText="未付款,若30分钟内未付款,订单将取消"
+                pri.innerHTML=`<button onclick="fukuan()" class="btn btn-primary mt-3">去付款</button>`
+                dan.innerHTML='<button onclick="cancle()" class="btn btn-outline-danger mt-3">取消订单</button>'
+            }else if(da.state=="待发货"){
+                lj.innerText="已付款,等待商家发货"
+                dan.innerHTML="<button class='btn btn-outline-danger mt-3' data-bs-toggle='modal' data-bs-target='#refundModal'>我要退款</button>"
+            }else if(da.state=="待收货"){
+                lj.innerText="已发货,等待收货"
+                pri.innerHTML=`<button onclick="con()" class="btn btn-primary mt-3">确认收货</button>`
+                dan.innerHTML="<button class='btn btn-outline-danger mt-3' data-bs-toggle='modal' data-bs-target='#refundModal'>我要退款</button>"
+            }else if(da.state=="已取消"){
+                let ol=document.getElementById("ol")
+                ol.innerText="订单已取消"
+            }else if(da.state=="退款中"){
+                let ol=document.getElementById("ol")
+                ol.innerText="退款中,等待商家核验,承诺2小时内退款"
+            }else if(da.state=='已退款'){
+                let ol=document.getElementById("ol")
+                ol.innerText="已退款,请检查是否到账"
+            }else{
+                let ol=document.getElementById("ol")
+                ol.style.color="green"
+                dan.innerHTML="<button class='btn btn-outline-danger mt-3' data-bs-toggle='modal' data-bs-target='#refundModal'>我要退款</button>"
+                ol.innerText="已收货,订单已完成"
+            }
+        }
+    ).catch(
+        function(err){
+            if(err.response.status==500){
+                alert("该订单已取消")
+                location.href="/order/"
+            }
+        }
+    )
+    function cancle(){
+        if(!confirm("你确定要取消订单吗?")){
+            return
+        }
+        api.delete("/get_order/",{params:{code:pk}}).then(
+            function(res){
+                alert("订单已取消")
+                location.href="/order/"
+            }
+        )
+    }
+
+    function fukuan(){
+        location.href="/zhifu/"+pk
+    }
+    const refundModal = document.querySelector('#refundModal');
+
+    const submitBtn = document.querySelector('#submitRefund');
+
+    submitBtn.addEventListener('click', function(){
+
+      const selectedRadio = document.querySelector('input[name="refundReason"]:checked');
+      const remark = document.querySelector('#refundRemark').value;
+
+      if(!selectedRadio){
+        alert("请选择退款原因");
+        return;
+      }
+
+      const reason = selectedRadio.value;
+      console.log("退款原因：", reason);
+      console.log("补充说明：", remark);
+      api.post("/tuikuan/",{reason:reason,remark:remark,code:pk}).then(
+          function(res){
+            bootstrap.Modal.getInstance(refundModal).hide()
+            setTimeout(()=>{
+                alert("提交成功,由于商品还未发货,享受极速退款")
+                location.href="/order/"
+            },200)
+
+          }
+      ).catch(
+          function(err){
+            bootstrap.Modal.getInstance(refundModal).hide()
+            setTimeout(()=>{
+                alert("提交成功")
+                location.href="/order/"
+            },200)
+
+          }
+      )
+    })
+    function con(){
+        if(!confirm("你确定收到货了吗?")){
+            return
+        }
+        api.post("/con/",{code:pk}).then(
+            function(res){
+                location.href="/order/"
+            }
+        )
+    }
+</script>
+</body>
+</html>

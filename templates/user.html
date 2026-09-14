@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人主页 - 简易商城</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar{
+            width:36px;height:36px;border-radius:50%;object-fit:cover;
+        }
+        .big-avatar{
+            width:100px;height:100px;border-radius:50%;object-fit:cover;
+        }
+        @media (max-width:768px){
+            .card{
+                padding:1.2rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">简易商城</a>
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/">商品列表</a></li>
+            <li class="nav-item"><a class="nav-link" href="/cart/">购物车</a></li>
+            <li class="nav-item"><a class="nav-link" href="/order/">我的订单</a></li>
+        </ul>
+        <!-- 右侧头像+个人主页 -->
+        <div class="d-flex align-items-center gap-3">
+            <a href="/user/" class="d-flex align-items-center gap-2 text-white text-decoration-none">
+                <img id="av" src="https://via.placeholder.com/36" class="avatar">
+                <span>个人主页</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <!-- 左侧用户信息卡片，手机全屏 -->
+        <div class="col-md-4 col-12 mb-4">
+            <div class="card p-4 text-center shadow-sm">
+                <a id="im" href="#"><img id="ava" src="https://via.placeholder.com/100" class="big-avatar mx-auto mb-3"></a>
+                <h4 id="name1">用户001</h4>
+                <p id="email1" class="text-muted">user@example.com</p>
+                <span id="ld" style="color:green"></span>
+                <hr>
+                <div class="d-grid gap-2">
+                    <a href="/edit/" class="btn btn-outline-primary">编辑资料</a>
+                    <input type="file" id="avatarFile" accept="image/*" style="display:none">
+                    <button onclick="document.getElementById('avatarFile').click()" class="btn btn-outline-info">更换头像</button>
+                    <button onclick="mo()" class="btn btn-outline-warning">修改密码</button>
+                    <button onclick="logout()" class="btn btn-outline-danger">退出登录</button>
+                    <button onclick="zhuxiao()" class="btn btn-danger">注销账号</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧统计与信息 -->
+        <div class="col-md-8 col-12">
+            <div class="card p-4 mb-4 shadow-sm">
+                <h4 class="mb-3">订单统计</h4>
+                <div class="row text-center">
+                    <div class="col">
+                        <h5 id="n">3</h5>
+                        <p class="text-muted">全部订单</p>
+                    </div>
+                    <div class="col">
+                        <h5 id="n1">1</h5>
+                        <p class="text-muted">待付款</p>
+                    </div>
+                    <div class="col">
+                        <h5 id="n2">1</h5>
+                        <p class="text-muted">待发货</p>
+                    </div>
+                    <div class="col">
+                        <h5 id="n3">1</h5>
+                        <p class="text-muted">待收货</p>
+                    </div>
+                    <div class="col">
+                        <h5 id="n4">1</h5>
+                        <p class="text-muted">已完成</p>
+                    </div>
+                </div>
+                <div class="mt-3 text-center">
+                    <a href="/order/" class="btn btn-primary">查看全部订单</a>
+                </div>
+            </div>
+
+            <!-- 个人信息 -->
+            <div class="card p-4 shadow-sm">
+                <h4 class="mb-3">个人信息</h4>
+                <div class="row mb-2">
+                    <div class="col-md-3 col-4 text-muted">昵称</div>
+                    <div id="name" class="col-md-9 col-8">用户001</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-3 col-4 text-muted">用户名</div>
+                    <div id="username" class="col-md-9 col-8">12345678</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-3 col-4 text-muted">邮箱</div>
+                    <div id="email" class="col-md-9 col-8">user@example.com</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-3 col-4 text-muted">手机号</div>
+                    <div id="phone" class="col-md-9 col-8">138****1234</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-3 col-4 text-muted">收货地址</div>
+                    <div id="address" class="col-md-9 col-8">河南省焦作市山阳区XX街道</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    if(!localStorage.getItem("refresh_token")){
+        location.href="/"
+    }
+    async function compressImg(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(file)
+            reader.onload = e => {
+                const imgObj = new Image()
+                imgObj.src = e.target.result
+                imgObj.onload = () => {
+                    const max = 1200
+                    let w = imgObj.width, h = imgObj.height
+                    if(w>max||h>max){
+                        if(w>h){ h = h*max/w; w=max }
+                        else{ w = w*max/h; h=max }
+                    }
+                    const canvas = document.createElement('canvas')
+                    canvas.width = w
+                    canvas.height = h
+                    canvas.getContext('2d').drawImage(imgObj,0,0,w,h)
+                    canvas.toBlob(b=>resolve(b), 'image/jpeg', 0.7)
+                }
+            }
+        })
+    }
+    function getRandName(){
+        const t = Date.now() + Math.random().toString(36).slice(2,10)
+        return t + ".jpg"
+    }
+    function logout(){
+        let c=confirm("你确定要退出登录吗")
+        if(!c){
+           return
+        }
+        api.post("/logout/",{refreshtoken:localStorage.getItem("refresh_token")}).then(
+            function(res){
+                localStorage.removeItem("refresh_token")
+                localStorage.removeItem("access_token")
+                location.href="/"
+            }
+        )
+    }
+    api.get("/get_file/").then(
+        function(res){
+            let av=document.getElementById("av")
+            let ava=document.getElementById("ava")
+            let im=document.getElementById("im")
+            let name=document.getElementById("name")
+            let name1=document.getElementById("name1")
+            let email=document.getElementById("email")
+            let email1=document.getElementById("email1")
+            let phone=document.getElementById("phone")
+            let address=document.getElementById("address")
+            let username=document.getElementById("username")
+            let d=res.data
+            for(i=1;i<=4;i++){
+                let n=document.getElementById("n"+i)
+                n.innerText=d['n'+i]
+            }
+            let nn=document.getElementById("n")
+            nn.innerText=d['n']
+            username.innerText=d.username
+            name.innerText=d.name
+            name1.innerText=d.name
+            email.innerText=d.email
+            email1.innerText=d.email
+            phone.innerText=d.phone
+            if(d.phone==''){
+                phone.innerText="未公布"
+            }
+            address.innerText=d.address
+            console.log(res.data)
+            im.href=baseURL+res.data.avatar_url
+            ava.src=baseURL+res.data.avatar_url
+            av.src=baseURL+res.data.avatar_url
+        }
+    )
+    let avatar=document.getElementById("avatarFile")
+    avatar.onchange=async function(e){
+        let fd=new FormData()
+        const img_file=await compressImg(e.target.files[0])
+        fd.append("avatar",img_file,getRandName())
+        api.post("/avatar/",fd).then(
+            function(res){
+                let ld=document.getElementById("ld")
+                ld.innerText="头像更换成功"
+                setTimeout(()=>{
+                    ld.innerText=""
+                },7000)
+                ava.src=res.data.avatar_url
+                av.src=res.data.avatar_url
+                im.href=res.data.avatar_url
+            }
+        )
+    }
+    function zhuxiao(){
+        if(!confirm("你确定要注销账号吗")){
+            return
+        }
+        location.href="/verfication/"
+    }
+    function mo(){
+        location.href="/xiugai/"
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑资料 - 简易商城</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar{
+            width:36px;height:36px;border-radius:50%;object-fit:cover;
+        }
+        @media (max-width:768px){
+            .card{
+                padding:1.2rem !important;
+            }
+        }
+        .jjkk{
+            color:red
+        }
+    </style>
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">简易商城</a>
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/">商品列表</a></li>
+            <li class="nav-item"><a class="nav-link" href="/cart/">购物车</a></li>
+            <li class="nav-item"><a class="nav-link" href="/order/">我的订单</a></li>
+        </ul>
+        <!-- 右侧头像+个人主页 -->
+        <div class="d-flex align-items-center gap-3">
+            <a href="/user/" class="d-flex align-items-center gap-2 text-white text-decoration-none">
+                <img id="av" src="https://via.placeholder.com/36" class="avatar">
+                <span>个人主页</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <!--电脑占8列，手机全屏12列 -->
+        <div class="col-md-8 col-12">
+            <div class="card p-4 shadow-sm">
+                <h4 class="mb-4">编辑个人资料</h4>
+
+                    <div class="mb-3">
+                        <label class="form-label">昵称</label>
+                        <input maxlength="12" id="name" type="text" class="form-control" value="用户001">
+                        <span id="msg1" class="jjkk"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">手机号</label>
+                        <input maxlength="11" id="phone" type="tel" class="form-control" value="">
+                        <span id="msg2" class="jjkk"></span>
+                    </div>
+                    <div class="row mb-0 g-2">
+                        <label class="form-label">收货地址</label>
+                        <div class="col">
+                            <label class="form-label">省份</label>
+                            <select id="province" class="form-select">
+                                <option value="">请选择省份</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">城市</label>
+                            <select id="city" class="form-select">
+                                <option value="">请先选省份</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">区县</label>
+                            <select id="district" class="form-select">
+                                <option value="">请先选城市</option>
+                            </select>
+                        </div>
+                    </div>
+                   <span id="msg3" class="jjkk"></span>
+                    <div class="mb-3 mt-3">
+                        <label class="form-label">详细地址</label>
+                        <input id="address" type="text" class="form-control" placeholder="街道、小区、门牌号">
+                    </div>
+                    <div class="d-grid">
+                    <!--手机按钮自动垂直堆叠-->
+                        <span id="mmm" style="color:#0F8BDA"></span>
+                    <div class="d-flex gap-3 mt-4 flex-md-row flex-column">
+                        <button onclick="subm()" type="button" class="btn btn-primary flex-grow-1">保存修改</button>
+                        <a href="/user/" class="btn btn-outline-secondary flex-grow-1">取消</a>
+                    </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{% static 'api.js' %}"></script>
+<script>
+    if(!localStorage.getItem("refresh_token")){
+        location.href="/"
+    }
+    const areaData = {
+    "河南省": [
+        {"name":"焦作市","dist":["山阳区","解放区","中站区","马村区","修武县","博爱县"]},
+        {"name":"郑州市","dist":["金水区","二七区","中原区","惠济区"]},
+        {"name":"洛阳市","dist":["西工区","洛龙区","老城区"]}
+    ],
+    "北京市": [{"name":"北京市","dist":["东城区","西城区","朝阳区","海淀区"]}],
+    "上海市": [{"name":"上海市","dist":["黄浦区","徐汇区","浦东新区"]}],
+    "广东省": [{"name":"广州市","dist":["天河区","越秀区"]},{"name":"深圳市","dist":["南山区","福田区"]}]
+};
+
+const proSel = document.querySelector("#province");
+const citySel = document.querySelector("#city");
+const disSel = document.querySelector("#district");
+
+Object.keys(areaData).forEach(p=>{
+    proSel.innerHTML += `<option value="${p}">${p}</option>`
+})
+
+proSel.onchange = function(){
+    citySel.innerHTML = "<option value=''>请选择城市</option>";
+    disSel.innerHTML = "<option value=''>请先选城市</option>";
+    const pVal = this.value;
+    if(!pVal) return;
+    areaData[pVal].forEach(city=>{
+        citySel.innerHTML += `<option value="${city.name}">${city.name}</option>`
+    })
+}
+
+citySel.onchange = function(){
+    disSel.innerHTML = "<option value=''>请选择区县</option>";
+    const pVal = proSel.value;
+    const cVal = this.value;
+    if(!cVal) return;
+    const cityItem = areaData[pVal].find(i=>i.name===cVal);
+    cityItem.dist.forEach(d=>{
+        disSel.innerHTML += `<option value="${d}">${d}</option>`
+    })
+}
+    api.get('/get_file/').then(
+        function(res){
+            let d=res.data
+            let na=document.getElementById("name")
+            let av=document.getElementById("av")
+            let ph=document.getElementById("phone")
+            let p=document.getElementById("province")
+            let c=document.getElementById("city")
+            let di=document.getElementById("district")
+            let a=document.getElementById("address")
+            na.value=d.name
+            av.src=d.avatar_url
+            ph.value=d.phone
+            a.value=d.address.slice(9)
+        }
+    )
+    function subm(){
+        let na=document.getElementById("name")
+        let ph=document.getElementById("phone")
+        let p=document.getElementById("province")
+        let c=document.getElementById("city")
+        let di=document.getElementById("district")
+        let a=document.getElementById("address")
+        let msg1=document.getElementById("msg1")
+        let msg2=document.getElementById("msg2")
+        let msg3=document.getElementById("msg3")
+        let ir=true
+        if(na.value==''){
+            ir=false
+            msg1.innerText="昵称不能为空"
+        }
+        if(na.value.length>12){
+            ir=false
+            msg1.innerText="昵称不能超过12个字符"
+        }
+        if(ph.value!='' && ph.value.length!=11){
+            ir=false
+            msg2.innerText="请输入11位电话号"
+        }
+        if(p.value=='' || c.value=='' || di.value==''){
+            msg3.innerText="地址输入不完整"
+            ir=false
+        }
+        setTimeout(()=>{
+            msg1.innerText=''
+            msg2.innerText=''
+            msg3.innerText=''
+        },6000)
+        let src=document.getElementById("av").src
+        if(ir){
+            api.post('/file_post/',{avatar_url:src.slice(baseURL.length),name:na.value,phone:ph.value,address:p.value+c.value+di.value+a.value}).then(
+                function(res){
+                    alert("保存成功")
+                }
+            ).catch(
+                function(err){
+                    if(err.response.status==406){
+                        let mm=document.getElementById("mmm")
+                        mm.innerText="资料未修改"
+                        setTimeout(()=>{
+                            mm.innerText=""
+                        },7000)
+                    }
+                }
+            )
+        }
+    }
+</script>
+</body>
+</html>
