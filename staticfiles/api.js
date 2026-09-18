@@ -1,13 +1,11 @@
 window.baseURL = "http://81.70.119.19"
 axios.defaults.baseURL = baseURL
 const api = axios.create({baseURL:""})
-
 api.interceptors.request.use(config=>{
     const access = localStorage.getItem("access_token")
     if(access) config.headers.Authorization = `Bearer ${access}`
     return config
 })
-
 api.interceptors.response.use(
     res=>res,
     async function(err){
@@ -41,7 +39,6 @@ api.interceptors.response.use(
         return Promise.reject(err)
     }
 )
-
 function goLogin(){
     let rr=confirm("你还没有登录,请先登录")
     if(!rr){
