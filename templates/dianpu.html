@@ -44,7 +44,7 @@
             <h3 id="name">键创外设专营店</h3>
             <p id="jianjie" class="text-muted mb-0">主营：键盘、游戏鼠标等电脑外设产品</p>
         </div>
-        <a href="#comment" class="btn btn-outline-warning m-3">店铺评价</a>
+
     </div>
     <div class="mb-4">
         <select id="cc" class="form-select w-auto fs-4" onchange="jj(this)">
@@ -101,15 +101,17 @@
     const pathArr = location.pathname.split('/')
     const pk = pathArr.pop()
     console.log(pk)
-    api.get("/get_file/").then(
-        function(res){
-            let ava=document.getElementById("avatar")
-            ava.src=baseURL+res.data.avatar_url
-            let den=document.getElementById("den")
-            den.innerText="个人主页"
-            den.href="/user/"
-        }
-    )
+    if(localStorage.getItem("refresh_token")){
+        api.get("/get_file/").then(
+            function(res){
+                let ava=document.getElementById("avatar")
+                ava.src=baseURL+res.data.avatar_url
+                let den=document.getElementById("den")
+                den.innerText="个人主页"
+                den.href="/user/"
+            }
+        )
+    }
     api.get("/get_dianpu/",{params:{name:pk}}).then(
         function(res){
             console.log(res.data[0])

@@ -68,5 +68,6 @@ urlpatterns = [
     path("realese/",Realese.as_view()),
     path("move/",Move.as_view()),
     path("comments/",Comments.as_view()),
+    path("alipay/",TemplateView.as_view(template_name="alipay.html")),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -248,8 +248,18 @@
 
     let f=document.getElementById("file")
     let n=0
-    api.get("/clear/")
+    if(localStorage.getItem("refresh_token")){
+        api.get("/clear/").then(
+            function(res){
+                return
+            }
+        )
+    }
     f.onchange=async function(e){
+        if(!localStorage.getItem("refresh_token")){
+            alert("请先登录")
+            return
+        }
         if(n>=6){
             alert("图片已达上限")
             return
@@ -271,7 +281,7 @@
         )
     }
     function che(){
-        let di=document.getElementById("img"+n)
+        let di=document.getElementById("imgg"+n)
         di.remove()
         n--
         if(n<=0){
@@ -334,6 +344,8 @@
                     </div>
                 `
                 const div = document.createRange().createContextualFragment(htmlStr)
+                let mmmm=document.getElementById("mmmm")
+                mmmm.innerText="发送成功"
                 let comme=document.getElementById("comments")
                 comme.prepend(div)
                 let iimm=document.getElementById("iimm")
@@ -351,8 +363,7 @@
         let che=document.getElementById("che")
         che.innerHTML=''
         te.value=""
-        let mmmm=document.getElementById("mmmm")
-        mmmm.innerText="发送成功"
+
         setTimeout(()=>{
             mmmm.innerText=''
         },7000)
@@ -375,6 +386,7 @@
             let dianpu=document.getElementById("dianpu")
             dianpu.innerText=d.dianpu
             img.src=baseURL+d.img_url
+            img.onclick=function(){openPreview(baseURL+d.img_url)}
             mingzi.innerText=d.name
             localStorage.setItem("name",d.name)
             jiage.innerText="¥"+d.price

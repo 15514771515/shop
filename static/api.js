@@ -1,4 +1,4 @@
-window.baseURL = "http://u2bc6a75.natappfree.cc" //natapp外网
+window.baseURL = "http://d4aaa7a9.natappfree.cc" //natapp外网
 
 // =====删掉全局axios请求拦截！！这是罪魁祸首=====
 // axios.interceptors.request.use 这段全部删除！不要全局挂载token

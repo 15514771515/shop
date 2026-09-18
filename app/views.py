@@ -24,7 +24,7 @@ from rest_framework_simplejwt.tokens import AccessToken,RefreshToken
 from app.redis import r
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-BASE_URL="http://u2bc6a75.natappfree.cc"
+BASE_URL="http://d4aaa7a9.natappfree.cc"
 
 
 def clear_folder(folder_path):
@@ -487,6 +487,14 @@ class Order(APIView):
         from app.models import Order
         ord=Order.objects.filter(user=user1)
         for i in ord:
+            if i.state=='待收货':
+                s=float(i.t)
+                t=time.time()
+                print(t/60-s/60)
+                if t/60-s/60>100:
+                    i.state='已完成'
+                    i.t=time.time()
+                    i.save()
             if i.state=='已取消':
                 s=float(i.t)
                 t=time.time()
@@ -496,9 +504,8 @@ class Order(APIView):
             if i.state=='退款中':
                 s = float(i.t)
                 t = time.time()
-                r=random.randint(10,80)
                 print(r)
-                if t / 60 - s / 60 > r:
+                if t / 60 - s / 60 > 20:
                     i.state='已退款'
                     i.t=time.time()
                     i.save()

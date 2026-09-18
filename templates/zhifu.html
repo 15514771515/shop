@@ -117,7 +117,13 @@
     )
     function p(){
         localStorage.setItem("cod",pk)
-        location.href="/p/"
+        let wechat=document.getElementById("wechat")
+        let alipay=document.getElementById("alipay")
+        if(wechat.checked==true){
+            location.href="/p/"
+        }else{
+            location.href="/alipay/"
+        }
     }
 </script>
 </body>
