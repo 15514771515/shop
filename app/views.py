@@ -24,7 +24,7 @@ from rest_framework_simplejwt.tokens import AccessToken,RefreshToken
 from app.redis import r
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-BASE_URL="http://d4aaa7a9.natappfree.cc"
+BASE_URL="http://81.70.119.19"
 
 
 def clear_folder(folder_path):

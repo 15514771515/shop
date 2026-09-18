@@ -1,4 +1,4 @@
-window.baseURL = "http://d4aaa7a9.natappfree.cc"
+window.baseURL = "http://81.70.119.19"
 axios.defaults.baseURL = baseURL
 const api = axios.create({baseURL:""})
 
