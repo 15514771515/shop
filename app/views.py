@@ -4,7 +4,6 @@ from binstar_client.pprintb import user_list
 from django.shortcuts import render
 # Create your views here.
 import smtplib
-from alipay import AliPay
 import os
 from urllib.parse import unquote
 import random
@@ -417,7 +416,6 @@ class Shop_Cart(APIView):
                 d['count']=goodsid.count(i)
                 d['sum']=d['price']*d["count"]
                 data.append(d)
-        print(data)
         return Response(data,status=status.HTTP_200_OK)
     def delete(self,request):
         uid=request.user.id
@@ -443,8 +441,6 @@ class Tijiao(APIView):
             r.lrem(f"{request.user.id}_cart",0,i)
             from app.models import Order
             Order.objects.create(good_id=int(i),user=users,count=n,code=code)
-        print(c_li)
-        print(da)
         return Response({"order_code":code},status=status.HTTP_200_OK)
 
 class Pay(APIView):
