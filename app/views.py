@@ -25,7 +25,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 BASE_URL="http://81.70.119.19"
 
-
 def clear_folder(folder_path):
     if not os.path.exists(folder_path):
         return
@@ -49,6 +48,18 @@ def dingdanhao():
         qq=random.randint(0,9)
         ri+=str(qq)
     return pre+t+ri
+def send_message(message,m,receiver_email):
+    sender = "3163981881@qq.com"
+    auth_code = "qcfhiaywwgpxdgja"  # 你的授权码
+    msg = MIMEText(message)
+    msg["Subject"] = m
+    msg["From"] = sender
+    msg["To"] = receiver_email
+    # QQ邮箱SSL方式，465端口
+    server = smtplib.SMTP_SSL("smtp.qq.com", 465)
+    server.login(sender, auth_code)
+    server.sendmail(sender, receiver_email, msg.as_string())
+    server.quit()
 def send_code_email(receiver_email, code):
     sender = "3163981881@qq.com"
     auth_code = "qcfhiaywwgpxdgja"  # 你的授权码
@@ -328,6 +339,7 @@ class Index(APIView):
                 print("dddddddd")
                 g.storage+=i.count
                 g.save()
+                send_message(message=f"订单超时已取消,订单号:{i.code}", m="订单取消提示", receiver_email=i.user.user.email)
         ord=Order.objects.filter(state='待发货')
         for i in ord:
             s = float(i.t)
@@ -338,6 +350,7 @@ class Index(APIView):
                 i.state = '待收货'
                 i.t = time.time()
                 i.save()
+                send_message(message=f"订单已发货,订单号:{i.code}", m="订单发货提示", receiver_email=i.user.user.email)
         return Response(da,status=status.HTTP_200_OK)
 
 class Comments(APIView):
@@ -441,6 +454,7 @@ class Tijiao(APIView):
             r.lrem(f"{request.user.id}_cart",0,i)
             from app.models import Order
             Order.objects.create(good_id=int(i),user=users,count=n,code=code)
+        send_message(message=f"订单创建成功,订单号:{code},请在30分钟内完成支付",m="创建订单提示",receiver_email=request.user.email)
         return Response({"order_code":code},status=status.HTTP_200_OK)
 
 class Pay(APIView):
@@ -488,6 +502,8 @@ class Order(APIView):
                 t=time.time()
                 print(t/60-s/60)
                 if t/60-s/60>100:
+                    send_message(message=f"订单已完成,订单号:{i.code}", m="订单完成提示",
+                                 receiver_email=request.user.email)
                     i.state='已完成'
                     i.t=time.time()
                     i.save()
@@ -505,6 +521,7 @@ class Order(APIView):
                     i.state='已退款'
                     i.t=time.time()
                     i.save()
+                    send_message(message=f"退款成功,订单号:{i.code}", m="退款成功提示", receiver_email=request.user.email)
             if i.state=='已退款':
                 s = float(i.t)
                 t = time.time()
@@ -543,6 +560,7 @@ class Order(APIView):
             m.state="已取消"
             m.t=str(time.time())
             m.save()
+        send_message(message=f"订单已取消,订单号:{code}", m="取消订单提示", receiver_email=request.user.email)
         return Response(status=status.HTTP_200_OK)
 
 class Order_De(APIView):
@@ -622,6 +640,7 @@ class Pay_Pwd(APIView):
                 i.state="待发货"
                 i.t=time.time()
                 i.save()
+            send_message(message=f"支付成功,订单号:{code}",m="支付成功提示",receiver_email=request.user.email)
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -632,6 +651,7 @@ class Tui(APIView):
         code=request.data.get("code")
         user=Users.objects.get(user=request.user)
         s=Order.objects.filter(code=code,user=user).first().state
+        print(s)
         if s=='待发货':
             y=Order.objects.filter(user=user,code=code)
             for i in y:
@@ -641,6 +661,7 @@ class Tui(APIView):
                 g.storage+=i.count
                 g.save()
                 i.save()
+            send_message(message=f"退款成功,订单号:{code}", m="退款成功提示", receiver_email=request.user.email)
             return Response(status=status.HTTP_200_OK)
         else:
             y = Order.objects.filter(user=user, code=code)

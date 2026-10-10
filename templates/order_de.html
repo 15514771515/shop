@@ -259,16 +259,16 @@
                 alert("提交成功,由于商品还未发货,享受极速退款")
                 location.href="/order/"
             },200)
-
           }
       ).catch(
           function(err){
-            bootstrap.Modal.getInstance(refundModal).hide()
-            setTimeout(()=>{
-                alert("提交成功")
-                location.href="/order/"
-            },200)
-
+            if(err.response.status==400){
+                bootstrap.Modal.getInstance(refundModal).hide()
+                setTimeout(()=>{
+                    alert("提交成功")
+                    location.href="/order/"
+                },200)
+            }
           }
       )
     })
